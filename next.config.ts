@@ -7,7 +7,8 @@ const nextConfig: NextConfig = {
     unoptimized: true
   },
   basePath: '/omeans-team.github.io',
-  assetPrefix: '/omeans-team.github.io/',
+  assetPrefix: '/omeans-team.github.io',
+  distDir: 'out',
 };
 
 export default nextConfig;

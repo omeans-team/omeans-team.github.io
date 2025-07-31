@@ -1,0 +1,13 @@
+/*
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+  X-Content-Type-Options: nosniff
+
+/_next/static/css/*
+  Content-Type: text/css
+
+/_next/static/js/*
+  Content-Type: application/javascript
+
+/_next/static/media/*
+  Content-Type: font/woff2 
