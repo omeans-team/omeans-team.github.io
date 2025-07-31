@@ -1,0 +1,581 @@
+/* 404 Page Styles */
+
+/* Moon Animation Variables */
+:root {
+  --zoom: 120;
+  --black: #000;
+  --white: #fff;
+  --red: #d34747;
+  --green: #1c6f1c;
+  --blue: #2a2aaa;
+  --yellow: yellow;
+  --grey: grey;
+  --violet: violet;
+  --purple: purple;
+  --pink: pink;
+  --bg: #202020;
+  --unit: 1vmin;
+  --available-screen-min: 665;
+  --px: calc(var(--zoom) * (var(--unit) / var(--available-screen-min)));
+  --moon-animation-time: 20s;
+}
+
+.mainContent {
+  position: absolute;
+  top: 75%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.content {
+  text-align: center;
+  max-width: 56rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.errorMessage {
+  margin-bottom: calc(15 * var(--px));
+}
+
+.errorMessage h2 {
+  font-size: calc(40 * var(--px));
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 0 calc(20 * var(--px)) #fff;
+}
+
+.errorMessage p {
+  font-size: calc(15 * var(--px));
+  color: #d1d5db;
+  max-width: calc(800 * var(--px));
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.625;
+}
+
+.errorMessage span {
+  color: #60a5fa;
+  text-shadow: 0 0 calc(10 * var(--px)) #60a5fa;
+}
+
+.homeButton {
+  background-color: #2563eb;
+  color: #ffffff;
+  padding: calc(10 * var(--px)) calc(20 * var(--px));
+  border-radius: calc(10 * var(--px));
+  font-weight: 600;
+  font-size: calc(10 * var(--px));
+  transition: all 0.3s ease;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 calc(20 * var(--px)) rgba(37, 99, 235, 0.5);
+}
+
+.homeButton:hover {
+  background-color: #1d4ed8;
+  box-shadow: 0 0 calc(30 * var(--px)) rgba(37, 99, 235, 0.8);
+  transform: scale(1.05);
+}
+
+@media (max-width: 640px) {
+  .mainContent {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+} 
+
+.container {
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Moon Canvas Container */
+.canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+}
+
+/* Row Container for 404 Layout */
+.row {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: calc(200 * var(--px));
+}
+
+/* Number 4 Styling */
+.row span {
+  height: calc(200 * var(--px));
+  width: calc(200 * var(--px));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(250 * var(--px));
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 calc(20 * var(--px)) #fff;
+}
+
+/* Moon Element */
+.moon {
+  background-color: var(--grey);
+  height: calc(200 * var(--px));
+  width: calc(200 * var(--px));
+  border-radius: 50%;
+  box-shadow: 0px 0px calc(70 * var(--px)) calc(5 * var(--px)) #fff;
+  background-image: url("https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg");
+  background-size: calc(430 * var(--px));
+  background-position: left;
+  background-repeat: no-repeat;
+  animation: moonAnimation var(--moon-animation-time) linear infinite;
+}
+
+@keyframes moonAnimation {
+  to {
+    background-position: right;
+  }
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at top, #070917 0%, #070917 95%);
+}
+
+/* Star Animation */
+.star {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: transparent;
+  box-shadow: 
+    100px 50px #fff,
+    200px 100px #fff,
+    300px 150px #fff,
+    400px 200px #fff,
+    500px 250px #fff,
+    600px 300px #fff,
+    700px 350px #fff,
+    800px 400px #fff,
+    900px 450px #fff,
+    1000px 500px #fff,
+    1100px 550px #fff,
+    1200px 600px #fff,
+    1300px 650px #fff,
+    1400px 700px #fff,
+    1500px 750px #fff,
+    1600px 800px #fff,
+    1700px 850px #fff,
+    1800px 900px #fff,
+    1900px 950px #fff,
+    50px 100px #fff,
+    150px 200px #fff,
+    250px 300px #fff,
+    350px 400px #fff,
+    450px 500px #fff,
+    550px 600px #fff,
+    650px 700px #fff,
+    750px 800px #fff,
+    850px 900px #fff,
+    950px 1000px #fff,
+    1050px 1100px #fff,
+    1150px 1200px #fff,
+    1250px 1300px #fff,
+    1350px 1400px #fff,
+    1450px 1500px #fff,
+    1550px 1600px #fff,
+    1650px 1700px #fff,
+    1750px 1800px #fff,
+    1850px 1900px #fff,
+    1950px 2000px #fff,
+    75px 125px #fff,
+    175px 225px #fff,
+    275px 325px #fff,
+    375px 425px #fff,
+    475px 525px #fff,
+    575px 625px #fff,
+    675px 725px #fff,
+    775px 825px #fff,
+    875px 925px #fff,
+    975px 1025px #fff,
+    1075px 1125px #fff,
+    1175px 1225px #fff,
+    1275px 1325px #fff,
+    1375px 1425px #fff,
+    1475px 1525px #fff,
+    1575px 1625px #fff,
+    1675px 1725px #fff,
+    1775px 1825px #fff,
+    1875px 1925px #fff,
+    1975px 2025px #fff;
+}
+
+/* Meteor Elements */
+.meteor1 {
+  position: absolute;
+  top: 50px;
+  left: 10%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.5s linear infinite;
+}
+
+.meteor1::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor2 {
+  position: absolute;
+  top: 100px;
+  left: 20%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.2s linear infinite;
+}
+
+.meteor2::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor3 {
+  position: absolute;
+  top: 150px;
+  left: 30%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.8s linear infinite;
+}
+
+.meteor3::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor4 {
+  position: absolute;
+  top: 200px;
+  left: 40%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.5s linear infinite;
+}
+
+.meteor4::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor5 {
+  position: absolute;
+  top: 250px;
+  left: 50%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.2s linear infinite;
+}
+
+.meteor5::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor6 {
+  position: absolute;
+  top: 300px;
+  left: 60%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.8s linear infinite;
+}
+
+.meteor6::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor7 {
+  position: absolute;
+  top: 350px;
+  left: 70%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.6s linear infinite;
+}
+
+.meteor7::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor8 {
+  position: absolute;
+  top: 400px;
+  left: 80%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.1s linear infinite;
+}
+
+.meteor8::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor9 {
+  position: absolute;
+  top: 450px;
+  left: 90%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.9s linear infinite;
+}
+
+.meteor9::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor10 {
+  position: absolute;
+  top: 500px;
+  left: 15%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.3s linear infinite;
+}
+
+.meteor10::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor11 {
+  position: absolute;
+  top: 550px;
+  left: 25%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.7s linear infinite;
+}
+
+.meteor11::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor12 {
+  position: absolute;
+  top: 600px;
+  left: 35%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.6s linear infinite;
+}
+
+.meteor12::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor13 {
+  position: absolute;
+  top: 650px;
+  left: 45%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.4s linear infinite;
+}
+
+.meteor13::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor14 {
+  position: absolute;
+  top: 700px;
+  left: 55%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 4.4s linear infinite;
+}
+
+.meteor14::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+.meteor15 {
+  position: absolute;
+  top: 750px;
+  left: 65%;
+  width: 300px;
+  height: 1px;
+  transform: rotate(-45deg);
+  background-image: linear-gradient(to right, #fff, rgba(255,255,255,0));
+  animation: meteor 3.8s linear infinite;
+}
+
+.meteor15::before {
+  content: "";
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  border-radius: 50%;
+  margin-top: -2px;
+  background: rgba(255,255,255,0.7);
+  box-shadow: 0 0 15px 3px #fff;
+}
+
+/* Meteor Animation Keyframes */
+@keyframes meteor {
+  0% {
+    opacity: 1;
+    margin-top: -300px;
+    margin-right: -300px;
+  }
+  12% {
+    opacity: 0;
+  }
+  15% {
+    margin-top: 300px;
+    margin-left: -600px;
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
