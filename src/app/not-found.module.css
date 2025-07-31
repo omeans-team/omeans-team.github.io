@@ -1,25 +1,5 @@
 /* 404 Page Styles */
 
-/* Moon Animation Variables */
-:root {
-  --zoom: 120;
-  --black: #000;
-  --white: #fff;
-  --red: #d34747;
-  --green: #1c6f1c;
-  --blue: #2a2aaa;
-  --yellow: yellow;
-  --grey: grey;
-  --violet: violet;
-  --purple: purple;
-  --pink: pink;
-  --bg: #202020;
-  --unit: 1vmin;
-  --available-screen-min: 665;
-  --px: calc(var(--zoom) * (var(--unit) / var(--available-screen-min)));
-  --moon-animation-time: 20s;
-}
-
 .mainContent {
   position: absolute;
   top: 75%;
@@ -41,20 +21,20 @@
 }
 
 .errorMessage {
-  margin-bottom: calc(15 * var(--px));
+  margin-bottom: 15px;
 }
 
 .errorMessage h2 {
-  font-size: calc(40 * var(--px));
+  font-size: 40px;
   font-weight: 700;
   color: #ffffff;
-  text-shadow: 0 0 calc(20 * var(--px)) #fff;
+  text-shadow: 0 0 20px #fff;
 }
 
 .errorMessage p {
-  font-size: calc(15 * var(--px));
+  font-size: 15px;
   color: #d1d5db;
-  max-width: calc(800 * var(--px));
+  max-width: 800px;
   margin-left: auto;
   margin-right: auto;
   line-height: 1.625;
@@ -62,26 +42,26 @@
 
 .errorMessage span {
   color: #60a5fa;
-  text-shadow: 0 0 calc(10 * var(--px)) #60a5fa;
+  text-shadow: 0 0 10px #60a5fa;
 }
 
 .homeButton {
   background-color: #2563eb;
   color: #ffffff;
-  padding: calc(10 * var(--px)) calc(20 * var(--px));
-  border-radius: calc(10 * var(--px));
+  padding: 10px 20px;
+  border-radius: 10px;
   font-weight: 600;
-  font-size: calc(10 * var(--px));
+  font-size: 10px;
   transition: all 0.3s ease;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  box-shadow: 0 0 calc(20 * var(--px)) rgba(37, 99, 235, 0.5);
+  box-shadow: 0 0 20px rgba(37, 99, 235, 0.5);
 }
 
 .homeButton:hover {
   background-color: #1d4ed8;
-  box-shadow: 0 0 calc(30 * var(--px)) rgba(37, 99, 235, 0.8);
+  box-shadow: 0 0 30px rgba(37, 99, 235, 0.8);
   transform: scale(1.05);
 }
 
@@ -118,35 +98,35 @@
   z-index: 5;
   display: flex;
   align-items: center;
-  gap: calc(200 * var(--px));
+  gap: 200px;
 }
 
 /* Number 4 Styling */
 .row span {
-  height: calc(200 * var(--px));
-  width: calc(200 * var(--px));
+  height: 200px;
+  width: 200px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: calc(250 * var(--px));
+  font-size: 250px;
   font-weight: bold;
   color: #fff;
-  text-shadow: 0 0 calc(20 * var(--px)) #fff;
+  text-shadow: 0 0 20px #fff;
 }
 
 /* Moon Element */
 .moon {
-  background-color: var(--grey);
-  height: calc(200 * var(--px));
-  width: calc(200 * var(--px));
+  background-color: grey;
+  height: 200px;
+  width: 200px;
   border-radius: 50%;
-  box-shadow: 0px 0px calc(70 * var(--px)) calc(5 * var(--px)) #fff;
+  box-shadow: 0px 0px 70px 5px #fff;
   background-image: url("https://svs.gsfc.nasa.gov/vis/a000000/a004700/a004720/lroc_color_poles_1k.jpg");
-  background-size: calc(430 * var(--px));
+  background-size: 430px;
   background-position: left;
   background-repeat: no-repeat;
-  animation: moonAnimation var(--moon-animation-time) linear infinite;
+  animation: moonAnimation 20s linear infinite;
 }
 
 @keyframes moonAnimation {
