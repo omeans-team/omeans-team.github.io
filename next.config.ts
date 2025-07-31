@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true
   },
-  basePath: process.env.NODE_ENV === 'production' ? '/omeans-team.github.io' : '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? '/omeans-team.github.io' : '',
+  basePath: '/omeans-team.github.io',
+  assetPrefix: '/omeans-team.github.io/',
 };
 
 export default nextConfig;
