@@ -6,8 +6,6 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true
   },
-  basePath: '/omeans-team.github.io',
-  assetPrefix: '/omeans-team.github.io',
   distDir: 'out',
 };
 

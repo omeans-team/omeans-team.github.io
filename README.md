@@ -40,7 +40,7 @@ If you need to deploy manually:
 1. Go to your repository settings on GitHub
 2. Navigate to "Pages" in the sidebar
 3. Set the source to "GitHub Actions"
-4. The site will be available at: `https://[username].github.io/omeans-team.github.io`
+4. The site will be available at: `https://omeans-team.github.io`
 
 ## Project Structure
 

@@ -17,7 +17,7 @@ Setelah repository dibuat, GitHub akan menampilkan instruksi. Jalankan perintah 
 
 ```bash
 # Tambahkan remote repository
-git remote add origin https://github.com/[USERNAME]/omeans-team.github.io.git
+git remote add origin https://github.com/omeans-team.github.io.git
 
 # Push ke branch main
 git branch -M main
@@ -39,7 +39,7 @@ Ganti `[USERNAME]` dengan username GitHub Anda.
 Setelah push pertama, GitHub Actions akan otomatis:
 - Build project Next.js
 - Deploy ke GitHub Pages
-- Website akan tersedia di: `https://[USERNAME].github.io/omeans-team.github.io`
+- Website akan tersedia di: `https://omeans-team.github.io`
 
 ### 5. Update Website
 
@@ -71,5 +71,5 @@ GitHub Actions akan otomatis rebuild dan deploy website.
 ## URL Website
 
 Website akan tersedia di:
-- **Production**: `https://[USERNAME].github.io/omeans-team.github.io`
+- **Production**: `https://omeans-team.github.io`
 - **Development**: `http://localhost:3000` (saat `npm run dev`) 
