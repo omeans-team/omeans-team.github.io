@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 // Deterministic random number generator with fixed precision
 function seededRandom(seed: number) {
   const x = Math.sin(seed) * 10000;
   const result = x - Math.floor(x);
-  // Round to 4 decimal places to ensure consistency
   return Math.round(result * 10000) / 10000;
 }
 
@@ -14,13 +13,13 @@ function seededRandom(seed: number) {
 function generateParticles(count: number) {
   const particles = [];
   for (let i = 0; i < count; i++) {
-    const seed = i * 12345; // Use index as seed for deterministic values
+    const seed = i * 12345;
     const left = seededRandom(seed);
     const top = seededRandom(seed + 1);
     const delay = seededRandom(seed + 2);
     const duration = seededRandom(seed + 3);
     const opacity = seededRandom(seed + 4);
-    
+
     particles.push({
       id: i,
       left: `${(left * 100).toFixed(2)}%`,
@@ -33,117 +32,148 @@ function generateParticles(count: number) {
   return particles;
 }
 
+
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-  const [isClient, setIsClient] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const sectionRef = useRef<HTMLElement>(null)
+  const [scrollPercentage, setScrollPercentage] = useState(0)
+  const [blackHoleSize, setBlackHoleSize] = useState(50)
+  const [videoScale, setVideoScale] = useState(1)
+  const [videoBlur, setVideoBlur] = useState(0)
+  const [showHero, setShowHero] = useState(false)
+  const [activeTextIndex, setActiveTextIndex] = useState(-1)
 
   // Generate particles deterministically
-  const particles = useMemo(() => generateParticles(20), []);
+  const particles = useMemo(() => generateParticles(15), []);
 
   useEffect(() => {
-    setIsClient(true);
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
+    const video = videoRef.current
+    const section = sectionRef.current
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    if (!video || !section) return
 
-  // Calculate black hole effect based on scroll position
-  const maxScroll = 800; // Maximum scroll distance for full effect
-  const scrollProgress = Math.min(scrollY / maxScroll, 1);
-  const holeSize = 800 - (scrollProgress * 800); // Hole shrinks from 300px to 50px
-  const holeOpacity = scrollProgress; // Black becomes more dominant as you scroll down
+    // Wait for video to be ready
+    const handleVideoReady = () => {
+      // Set video to beginning and pause
+      video.currentTime = 0
+      video.pause()
+
+      // Throttle function untuk mengurangi frekuensi update
+      let ticking = false
+      const handleScroll = () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const distance = window.scrollY - section.offsetTop
+            const total = section.clientHeight - window.innerHeight
+
+            let percentage = distance / total
+            percentage = Math.max(0, percentage)
+            percentage = Math.min(percentage, 1.0)
+
+            setScrollPercentage(percentage)
+
+            // Calculate active text index for cinematic effects
+            let newActiveIndex = -1
+            if (percentage >= 0 && percentage < 0.1) newActiveIndex = 0
+            else if (percentage >= 0.1 && percentage < 0.2) newActiveIndex = 1
+            else if (percentage >= 0.2 && percentage < 0.3) newActiveIndex = 2
+            else if (percentage >= 0.3 && percentage < 0.4) newActiveIndex = 3
+            else if (percentage >= 0.4 && percentage < 0.5) newActiveIndex = 4
+            else if (percentage >= 0.5 && percentage < 0.6) newActiveIndex = 5
+
+            if (newActiveIndex !== activeTextIndex) {
+              setActiveTextIndex(newActiveIndex)
+            }
+
+            // Show hero image when scroll reaches 100%
+            if (percentage >= 0.8) {
+              setShowHero(true)
+            } else {
+              setShowHero(false)
+            }
+
+
+
+            // Calculate black hole size - starts at 50% and reaches 100% at 60% scroll, then disappears
+            let holeSize = 50
+            if (percentage <= 0.6) {
+              // From 0% to 60%, scale from 50% to 100%
+              holeSize = Math.min(100, 50 + (percentage * 83.33)) // 83.33 = 50/0.6 to reach 100% at 60% scroll
+            }
+            setBlackHoleSize(holeSize)
+
+            // Calculate video perspective based on scroll percentage
+            let perspective = 1
+            let perspectiveOrigin = 'center bottom'
+            if (percentage >= 0.7 && percentage <= 0.9) {
+              // Between 70% and 90%, apply perspective effect
+              const perspectiveProgress = (percentage - 0.7) / (0.9 - 0.7) // 0 to 1
+              perspective = 1 - (perspectiveProgress * 0.4) // 1 to 0.6
+            } else if (percentage > 0.9) {
+              // From 90% onwards, maintain the final perspective (0.6)
+              perspective = 0.6
+            }
+            setVideoScale(perspective)
+
+            // Calculate video blur based on scroll percentage
+            let blur = 0
+            if (percentage >= 0.8) {
+              // From 70% onwards, apply blur effect
+              blur = 15 // Fixed blur amount
+            }
+            setVideoBlur(blur)
+
+            // Debug logging
+            console.log(`Scroll: ${(percentage * 100).toFixed(1)}%, Perspective: ${perspective.toFixed(3)}, Blur: ${blur.toFixed(1)}px, State: ${percentage > 0.9 ? 'Maintained' : percentage >= 0.7 ? 'Transitioning' : 'Normal'}`)
+
+            // Debug black hole
+            console.log(`Black Hole visible: ${percentage < 0.6}, Size: ${holeSize.toFixed(1)}%`)
+
+            // Force re-render for testing
+            if (video.style) {
+              video.style.transform = `translateZ(0) perspective(1000px) scale(${perspective}) rotateX(${(1 - perspective) * 20}deg) translateZ(${(1 - perspective) * -200}px) translateY(${(1 - perspective) * 20}vh) scaleX(${1 + (1 - perspective)})`
+              video.style.filter = `blur(${blur}px)`
+              console.log('Applied transform:', video.style.transform)
+              console.log('Applied filter:', video.style.filter)
+            }
+
+            if (video.duration > 0) {
+              // Stop video scrubbing at 60% scroll
+              const videoPercentage = Math.min(percentage, 0.6)
+              video.currentTime = video.duration * videoPercentage
+
+              // Keep video paused - no auto play
+              if (!video.paused) {
+                video.pause()
+              }
+            }
+            ticking = false
+          })
+          ticking = true
+        }
+      }
+
+      handleScroll()
+      window.addEventListener('scroll', handleScroll, { passive: true })
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll)
+      }
+    }
+
+    if (video.readyState >= 2) {
+      handleVideoReady()
+    } else {
+      video.addEventListener('loadeddata', handleVideoReady, { once: true })
+    }
+
+    return () => {
+      video.removeEventListener('loadeddata', handleVideoReady)
+    }
+  }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
-      {/* Hero Section with Video Background Effect */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden">
-        {/* Black Hole Effect */}
-        <div 
-          className="absolute inset-0 pointer-events-none black-hole-effect"
-          style={{
-            background: `radial-gradient(circle at center, transparent ${holeSize}px, rgba(0, 0, 0, ${holeOpacity * 0.7}) ${holeSize + 30}px, rgba(0, 0, 0, ${holeOpacity}) ${holeSize + 60}px, black ${holeSize + 100}px)`,
-            transition: 'all 0.1s ease-out'
-          }}
-        ></div>
-        
-        {/* Black Hole Glow Effect */}
-        <div 
-          className="absolute inset-0 pointer-events-none black-hole-glow"
-          style={{
-            opacity: Math.max(0, 1 - scrollProgress * 2), // Fade out glow as black hole grows
-            transform: `scale(${1 + scrollProgress * 0.2})`,
-            transition: 'all 0.1s ease-out'
-          }}
-        ></div>
-
-        {/* Animated Background */}
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(to bottom right, rgba(30, 58, 138, 0.2), rgba(88, 28, 135, 0.2), #000000)'
-        }}>
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.1), transparent 50%)'
-          }}></div>
-          <div className="absolute inset-0" style={{
-            background: 'radial-gradient(circle at 80% 20%, rgba(147, 51, 234, 0.1), transparent 50%)'
-          }}></div>
-        </div>
-        
-        {/* Floating Particles Effect */}
-        <div className="absolute inset-0">
-          {particles.map((particle) => (
-            <div
-              key={particle.id}
-              className="absolute w-1 h-1 bg-blue-400 rounded-full particle"
-              style={{
-                left: particle.left,
-                top: particle.top,
-                animationDelay: particle.animationDelay,
-                animationDuration: particle.animationDuration,
-                opacity: particle.opacity,
-                filter: 'blur(0.5px)',
-                boxShadow: '0 0 4px rgba(59, 130, 246, 0.5)'
-              }}
-            ></div>
-          ))}
-        </div>
-
-        {/* Hero Content */}
-        <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
-          <div className="mb-12">
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 gradient-text">
-              OMEANS
-            </h1>
-            <h2 className="text-xl md:text-3xl lg:text-4xl font-light text-gray-300 mb-8">
-              ENGINE
-            </h2>
-          </div>
-          
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
-            The most powerful and accessible real-time 3D creation tool.
-            <br />
-            <span className="text-blue-400">Built by developers, for developers.</span>
-          </p>
-          
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button className="button-primary">
-              DOWNLOAD NOW
-            </button>
-            <button className="button-secondary">
-              LEARN MORE
-            </button>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-gray-400 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-gray-400 rounded-full mt-2 animate-pulse"></div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-black text-white videoScrubber">
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50" style={{
@@ -159,6 +189,9 @@ export default function Home() {
               <a href="#team" className="nav-link">TEAM</a>
               <a href="#services" className="nav-link">SERVICES</a>
               <a href="#contact" className="nav-link">CONTACT</a>
+              <a href="/video-scrubber" className="nav-link">VIDEO SCRUBBER</a>
+              <a href="/youtube-scrubber" className="nav-link">YOUTUBE SCRUBBER</a>
+              <a href="/youtube-scrubber-advanced" className="nav-link">ADVANCED</a>
             </div>
             <button className="button-primary text-sm px-4 py-2">
               GET STARTED
@@ -166,6 +199,197 @@ export default function Home() {
           </div>
         </div>
       </nav>
+
+      {/* Video Scrubber Section */}
+      <section ref={sectionRef} className="videoHero">
+        <div className="heroVideo">
+          <video
+            ref={videoRef}
+            src="/video-scrubber/vid.mp4"
+            // src="https://www.youtube.com/embed/itvR7TQnWl0?si=SoHAh5AeuOQ0HSN_"
+            muted
+            playsInline
+            preload="auto"
+            crossOrigin="anonymous"
+            className="heroVideo"
+            style={{
+              transform: `translateZ(0) perspective(1000px) scale(${videoScale}) rotateX(${(1 - videoScale) * 20}deg) translateZ(${(1 - videoScale) * -200}px) translateY(${(1 - videoScale) * 20}vh) scaleX(${1 + (1 - videoScale)})`,
+              transformOrigin: 'center bottom',
+              transition: 'transform 0.1s ease-out, filter 0.1s ease-out',
+              willChange: 'transform, filter',
+              filter: `blur(${videoBlur}px)`
+            }}
+          />
+
+          {/* Animated Background */}
+          <div className="animatedBackground">
+            <div className="gradientOverlay"></div>
+            <div className="radialGradient1"></div>
+            <div className="radialGradient2"></div>
+          </div>
+
+          {/* Floating Particles Effect */}
+          <div className="particlesContainer">
+            {particles.map((particle) => (
+              <div
+                key={particle.id}
+                className="particle"
+                style={{
+                  left: particle.left,
+                  top: particle.top,
+                  animationDelay: particle.animationDelay,
+                  animationDuration: particle.animationDuration,
+                  opacity: particle.opacity,
+                }}
+              ></div>
+            ))}
+          </div>
+
+          {scrollPercentage < 0.6 && (
+            <div
+              className="blackHole"
+              style={{
+                '--hole-size': `${blackHoleSize}%`
+              } as React.CSSProperties}
+            />
+          )}
+
+          {/* Hero Image Overlay */}
+          {showHero && (
+            <div className="heroOverlay">
+
+              {/* Hero Content Overlay */}
+              <div className="heroContentOverlay">
+                {/* Hero Content */}
+                <div className="relative z-10 text-center max-w-5xl mx-auto px-6">
+                  <div className="mb-12">
+                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 gradient-text">
+                      OMEANS
+                    </h1>
+                    <h2 className="text-xl md:text-3xl lg:text-4xl font-light text-gray-300 mb-8">
+                      ENGINE
+                    </h2>
+                  </div>
+
+                  <p className="text-lg md:text-xl lg:text-2xl text-gray-300 mb-12 max-w-4xl mx-auto leading-relaxed">
+                    The most powerful and accessible real-time 3D creation tool.
+                    <br />
+                    <span className="text-blue-400">Built by developers, for developers.</span>
+                  </p>
+
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <button className="button-primary">
+                      DOWNLOAD NOW
+                    </button>
+                    <button className="button-secondary">
+                      LEARN MORE
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {scrollPercentage < 0.6 && (
+            <div
+              className="germanGothicO"
+              style={{
+                opacity: 1 - (scrollPercentage * 1.67), // Hilang pada 60% scroll
+                transform: `translate(-50%, -50%) scale(${1 + (scrollPercentage * 2)})` // Semakin besar saat scroll
+              }}
+            >
+              <svg
+                viewBox="0 0 100 100"
+                width="500"
+                height="500"
+                style={{ display: 'block' }}
+              >
+                {/* Blackletter O - very thick version */}
+                {/* Background fill for thickness */}
+                <rect x="20" y="15" width="60" height="70" fill="black" opacity="0.1" />
+
+                {/* Left vertical stem - main */}
+                <path
+                  d="M25 20 L25 80"
+                  stroke="black"
+                  strokeWidth="12"
+                  strokeLinecap="square"
+                />
+                {/* Right vertical stem - main */}
+                <path
+                  d="M75 20 L75 80"
+                  stroke="black"
+                  strokeWidth="12"
+                  strokeLinecap="square"
+                />
+
+                {/* Top angular connection */}
+                <path
+                  d="M25 20 L50 10 L75 20"
+                  stroke="black"
+                  strokeWidth="10"
+                  fill="none"
+                  strokeLinecap="square"
+                />
+                {/* Bottom angular connection */}
+                <path
+                  d="M25 80 L50 90 L75 80"
+                  stroke="black"
+                  strokeWidth="10"
+                  fill="none"
+                  strokeLinecap="square"
+                />
+
+                {/* Additional thickness layers */}
+                <path
+                  d="M22 25 L22 75"
+                  stroke="black"
+                  strokeWidth="14"
+                  strokeLinecap="square"
+                  opacity="0.4"
+                />
+                <path
+                  d="M78 25 L78 75"
+                  stroke="black"
+                  strokeWidth="14"
+                  strokeLinecap="square"
+                  opacity="0.4"
+                />
+
+                {/* Inner details for texture */}
+                <path
+                  d="M30 25 L30 75"
+                  stroke="black"
+                  strokeWidth="6"
+                  opacity="0.8"
+                />
+                <path
+                  d="M70 25 L70 75"
+                  stroke="black"
+                  strokeWidth="6"
+                  opacity="0.8"
+                />
+
+                {/* Extra thickness for solid look */}
+                <path
+                  d="M18 30 L18 70"
+                  stroke="black"
+                  strokeWidth="16"
+                  strokeLinecap="square"
+                  opacity="0.2"
+                />
+                <path
+                  d="M82 30 L82 70"
+                  stroke="black"
+                  strokeWidth="16"
+                  strokeLinecap="square"
+                  opacity="0.2"
+                />
+              </svg>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Features Section */}
       <section id="features" className="py-24" style={{
@@ -447,6 +671,69 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Story Text - Moved outside video container */}
+      <div className="story">
+          {/* Story Text 1 */}
+          <div className={`storyText ${activeTextIndex === 0 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0 && scrollPercentage < 0.1 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0 && scrollPercentage < 0.1 ? 0 : 40}px) scale(${scrollPercentage >= 0 && scrollPercentage < 0.1 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0 && scrollPercentage < 0.1 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0 && scrollPercentage < 0.1 ? 0 : 3}px) brightness(${scrollPercentage >= 0 && scrollPercentage < 0.1 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">Welcome to Omeans Engine&hellip;</h3>
+          </div>
+          
+          {/* Story Text 2 */}
+          <div className={`storyText ${activeTextIndex === 1 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 0 : 40}px) scale(${scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 0 : 3}px) brightness(${scrollPercentage >= 0.1 && scrollPercentage < 0.2 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">&hellip;where innovation meets creativity.</h3>
+          </div>
+          
+          {/* Story Text 3 */}
+          <div className={`storyText ${activeTextIndex === 2 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 0 : 40}px) scale(${scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 0 : 3}px) brightness(${scrollPercentage >= 0.2 && scrollPercentage < 0.3 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">We build the future of development tools.</h3>
+          </div>
+          
+          {/* Story Text 4 */}
+          <div className={`storyText ${activeTextIndex === 3 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 0 : 40}px) scale(${scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 0 : 3}px) brightness(${scrollPercentage >= 0.3 && scrollPercentage < 0.4 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">Powerful, accessible, and</h3>
+          </div>
+          
+          {/* Story Text 5 */}
+          <div className={`storyText ${activeTextIndex === 4 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 0 : 40}px) scale(${scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 0 : 3}px) brightness(${scrollPercentage >= 0.4 && scrollPercentage < 0.5 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">built for developers.</h3>
+          </div>
+          
+          {/* Story Text 6 */}
+          <div className={`storyText ${activeTextIndex === 5 ? 'active' : ''}`} style={{ 
+            opacity: scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 1 : 0,
+            transform: `translateY(${scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 0 : 40}px) scale(${scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 1 : 0.9}) rotateX(${scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 0 : 5}deg)`,
+            transition: 'all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            filter: `blur(${scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 0 : 3}px) brightness(${scrollPercentage >= 0.5 && scrollPercentage < 0.6 ? 1 : 0.8})`
+          }}>
+            <h3 className="gradientText">Experience the next generation of 3D creation.</h3>
+          </div>
+      </div>
     </div>
   );
 }

@@ -1,8 +1,45 @@
-# Omeans Team Website
+# Omeans Team - GitHub Pages
 
-This is a Next.js project for the Omeans Team website, deployed on GitHub Pages.
+Website portfolio Omeans Team dengan video scrubber yang interaktif.
 
-## Development
+## 🚀 Quick Deploy ke GitHub Pages
+
+### Opsi 1: Manual Deployment
+```bash
+# Build project
+npm run export
+
+# Upload semua file dari folder 'out/' ke GitHub repository
+```
+
+### Opsi 2: GitHub Actions (Recommended)
+1. Push kode ke repository GitHub
+2. GitHub Actions akan otomatis build dan deploy
+3. Website akan tersedia di: `https://[username].github.io/[repository-name]/`
+
+## 📁 Struktur Project
+
+```
+src/
+├── app/
+│   ├── page.tsx              # Home page (akan di-deploy)
+│   ├── video-scrubber/       # Video scrubber page
+│   ├── youtube-scrubber/     # YouTube scrubber page
+│   └── youtube-scrubber-advanced/ # Advanced YouTube scrubber
+├── globals.css
+└── layout.tsx
+```
+
+## 🎯 Yang Akan Di-deploy
+
+Hanya **Home page** (`/`) yang akan di-deploy ke GitHub Pages:
+- ✅ Home page dengan video scrubber
+- ✅ Navigation dan styling
+- ✅ Responsive design
+- ❌ Video scrubber pages (tidak di-deploy)
+- ❌ YouTube scrubber pages (tidak di-deploy)
+
+## 🛠️ Development
 
 ```bash
 # Install dependencies
@@ -12,45 +49,23 @@ npm install
 npm run dev
 
 # Build for production
-npm run build
+npm run export
 
-# Start production server
-npm start
+# Deploy script
+./deploy.sh
 ```
 
-## Deployment
+## 📖 Dokumentasi
 
-This project is automatically deployed to GitHub Pages using GitHub Actions.
+- [DEPLOYMENT.md](./DEPLOYMENT.md) - Panduan lengkap deployment
+- [VIDEO_SCRUBBER_README.md](./VIDEO_SCRUBBER_README.md) - Dokumentasi video scrubber
+- [YOUTUBE_SCRUBBER_README.md](./YOUTUBE_SCRUBBER_README.md) - Dokumentasi YouTube scrubber
 
-### Manual Deployment
+## 🌐 Live Demo
 
-If you need to deploy manually:
+Setelah deploy, website akan tersedia di:
+`https://[username].github.io/[repository-name]/`
 
-1. Build the project:
-   ```bash
-   npm run build
-   ```
+## 📝 License
 
-2. The built files will be in the `out/` directory
-
-3. Push to GitHub and the GitHub Actions workflow will automatically deploy to GitHub Pages
-
-### GitHub Pages Configuration
-
-1. Go to your repository settings on GitHub
-2. Navigate to "Pages" in the sidebar
-3. Set the source to "GitHub Actions"
-4. The site will be available at: `https://omeans-team.github.io`
-
-## Project Structure
-
-- `src/app/` - Next.js app directory with pages and components
-- `public/` - Static assets
-- `.github/workflows/` - GitHub Actions deployment configuration
-
-## Technologies Used
-
-- Next.js 15
-- React 19
-- TypeScript
-- Tailwind CSS
+© 2024 Omeans Team. All rights reserved.

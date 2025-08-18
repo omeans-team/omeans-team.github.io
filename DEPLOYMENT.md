@@ -1,75 +1,86 @@
-# Deployment Guide - GitHub Pages
+# GitHub Pages Deployment Guide
 
-## Langkah-langkah Deployment ke GitHub Pages
+## Cara Deploy ke GitHub Pages
 
-### 1. Buat Repository di GitHub
-
-1. Buka [GitHub](https://github.com) dan login
-2. Klik tombol "New repository" atau "New"
-3. Beri nama repository: `omeans-team.github.io`
-4. Pastikan repository bersifat **Public**
-5. Jangan centang "Add a README file" (karena sudah ada)
-6. Klik "Create repository"
-
-### 2. Hubungkan Repository Lokal dengan GitHub
-
-Setelah repository dibuat, GitHub akan menampilkan instruksi. Jalankan perintah berikut di terminal:
-
+### 1. Build Project
 ```bash
-# Tambahkan remote repository
-git remote add origin https://github.com/omeans-team.github.io.git
-
-# Push ke branch main
-git branch -M main
-git push -u origin main
+npm run export
 ```
 
-Ganti `[USERNAME]` dengan username GitHub Anda.
+### 2. Upload ke GitHub Pages
+
+#### Opsi A: Manual Upload
+1. Buka repository GitHub Anda
+2. Pergi ke Settings > Pages
+3. Pilih "Deploy from a branch"
+4. Pilih branch `main` dan folder `/ (root)`
+5. Upload semua file dari folder `out/` ke root repository
+
+#### Opsi B: GitHub Actions (Recommended)
+1. Buat file `.github/workflows/deploy.yml` dengan konten berikut:
+
+```yaml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Build project
+      run: npm run export
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./out
+```
 
 ### 3. Konfigurasi GitHub Pages
+1. Buka repository GitHub Anda
+2. Pergi ke Settings > Pages
+3. Pilih "Deploy from a branch"
+4. Pilih branch `gh-pages` (jika menggunakan GitHub Actions) atau `main`
+5. Klik Save
 
-1. Buka repository di GitHub
-2. Klik tab "Settings"
-3. Scroll ke bawah dan klik "Pages" di sidebar kiri
-4. Di bagian "Source", pilih "GitHub Actions"
-5. Klik "Configure" jika diminta
+## File yang Akan Di-deploy
 
-### 4. Deployment Otomatis
-
-Setelah push pertama, GitHub Actions akan otomatis:
-- Build project Next.js
-- Deploy ke GitHub Pages
-- Website akan tersedia di: `https://omeans-team.github.io`
-
-### 5. Update Website
-
-Untuk update website di masa depan:
-```bash
-# Buat perubahan pada kode
-# Commit perubahan
-git add .
-git commit -m "Update website content"
-
-# Push ke GitHub
-git push origin main
-```
-
-GitHub Actions akan otomatis rebuild dan deploy website.
+Hanya file berikut yang akan di-deploy:
+- `index.html` (Home page)
+- `_next/` (Static assets)
+- `.nojekyll` (Disable Jekyll)
+- `favicon.ico`
+- `public/` files
 
 ## Troubleshooting
 
-### Jika website tidak muncul:
-1. Cek tab "Actions" di repository GitHub
-2. Pastikan workflow berhasil dijalankan
-3. Tunggu beberapa menit untuk deployment selesai
+### Jika halaman tidak muncul:
+1. Pastikan file `.nojekyll` ada di root
+2. Tunggu beberapa menit untuk GitHub Pages update
+3. Cek Actions tab untuk error
 
-### Jika ada error build:
-1. Cek log di GitHub Actions
-2. Pastikan semua dependencies terinstall
-3. Test build lokal dengan `npm run build`
+### Jika assets tidak load:
+1. Pastikan `next.config.ts` memiliki `output: 'export'`
+2. Pastikan `trailingSlash: true` di config
+3. Cek console browser untuk error
 
-## URL Website
+## URL Setelah Deploy
 
-Website akan tersedia di:
-- **Production**: `https://omeans-team.github.io`
-- **Development**: `http://localhost:3000` (saat `npm run dev`) 
+Setelah deploy berhasil, website akan tersedia di:
+`https://[username].github.io/[repository-name]/` 

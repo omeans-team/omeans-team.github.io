@@ -1,1 +1,2 @@
-# This file tells GitHub Pages not to use Jekyll 
+# This file tells GitHub Pages not to use Jekyll
+# It's needed for static sites that don't use Jekyll 
