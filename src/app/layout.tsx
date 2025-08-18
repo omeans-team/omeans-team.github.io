@@ -27,6 +27,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Preload critical video for better performance */}
+        <link 
+          rel="preload" 
+          href="/video-scrubber/vid2.mp4" 
+          as="video" 
+          type="video/mp4"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

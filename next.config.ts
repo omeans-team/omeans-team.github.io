@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
     unoptimized: true
   },
   distDir: 'out',
+  // Note: Headers configuration is not supported with output: 'export'
+  // Cache headers are handled via .htaccess file for Apache servers
 };
 
 export default nextConfig;
