@@ -205,7 +205,7 @@ export default function Home() {
         <div className="heroVideo">
           <video
             ref={videoRef}
-            src="/video-scrubber/vid.mp4"
+            src="/video-scrubber/vid2.mp4"
             // src="https://www.youtube.com/embed/itvR7TQnWl0?si=SoHAh5AeuOQ0HSN_"
             muted
             playsInline
