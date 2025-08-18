@@ -127,6 +127,9 @@ const Home = React.memo(function Home() {
   const [activeTextIndex, setActiveTextIndex] = useState(-1)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const hydrated = useHydrated()
+  
+  // Use ref to track current activeTextIndex to avoid closure issues
+  const activeTextIndexRef = useRef(-1)
 
   // Generate particles deterministically - reduced for better performance
   const particles = useMemo(() => generateParticles(8), []);
@@ -205,8 +208,12 @@ const Home = React.memo(function Home() {
           else if (percentage >= 0.3 && percentage < 0.4) newActiveIndex = 3
           else if (percentage >= 0.4 && percentage < 0.5) newActiveIndex = 4
           else if (percentage >= 0.5 && percentage < 0.6) newActiveIndex = 5
+          else newActiveIndex = -1 // Hide text after 60% scroll
 
-          if (newActiveIndex !== activeTextIndex) {
+
+
+          if (newActiveIndex !== activeTextIndexRef.current) {
+            activeTextIndexRef.current = newActiveIndex
             setActiveTextIndex(newActiveIndex)
           }
 
@@ -272,7 +279,7 @@ const Home = React.memo(function Home() {
     return () => {
       video.removeEventListener('loadeddata', handleVideoReady)
     }
-  }, [activeTextIndex])
+  }, [])
 
   return (
     <div className="min-h-screen bg-black text-white videoScrubber">
@@ -699,7 +706,7 @@ const Home = React.memo(function Home() {
       </footer>
 
       {/* Story Text - Optimized to only render active text */}
-      {hydrated && activeTextIndex >= 0 && (
+      {hydrated && activeTextIndex >= 0 && activeTextIndex <= 5 && (
         <div className="story">
           <div className="storyText active" style={{ 
             opacity: 1,

@@ -11,12 +11,9 @@
     "deploy": "npm run export && touch out/.nojekyll && echo 'Deployment ready! Upload the contents of the out/ folder to GitHub Pages.'"
   },
   "dependencies": {
-    "@types/react-youtube": "^7.6.2",
     "next": "15.4.5",
     "react": "19.1.0",
-    "react-dom": "19.1.0",
-    "react-youtube": "^10.1.0",
-    "ytdl-core": "^4.11.5"
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
