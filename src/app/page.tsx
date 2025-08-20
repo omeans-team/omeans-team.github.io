@@ -2,9 +2,16 @@
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import dynamic from 'next/dynamic';
+import GitHubStats from '../components/GitHubStats';
+import GitHubInfo from '../components/GitHubInfo';
+import GitHubPersonalInfo from '../components/GitHubPersonalInfo';
+import GitHubProfileCard from '../components/GitHubProfileCard';
+import GitHubProfileStats from '../components/GitHubProfileStats';
+import ToolsDropdown from '../components/ToolsDropdown';
+import { clearCacheByPrefix } from '../utils/cache';
 
-// Dynamic import for client-side only components
-const MobileNavigation = dynamic(() => Promise.resolve(({ 
+// Mobile Navigation Component
+const MobileNavigation = ({ 
   mobileMenuOpen, 
   setMobileMenuOpen 
 }: { 
@@ -30,6 +37,13 @@ const MobileNavigation = dynamic(() => Promise.resolve(({
       {mobileMenuOpen && (
         <div className="md:hidden mt-4 pb-4 border-t border-gray-700">
           <div className="flex flex-col space-y-4 pt-4">
+            <a 
+              href="#about" 
+              className="nav-link text-center py-2"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              ABOUT
+            </a>
             <a 
               href="#features" 
               className="nav-link text-center py-2"
@@ -58,6 +72,39 @@ const MobileNavigation = dynamic(() => Promise.resolve(({
             >
               CONTACT
             </a>
+            <div className="border-t border-gray-700 pt-4">
+              <div className="text-center text-sm text-gray-400 mb-2">Tools</div>
+              <div className="flex flex-col space-y-2">
+                <button 
+                  onClick={() => {
+                    clearCacheByPrefix('github');
+                    window.location.reload();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center justify-center space-x-2 text-gray-300 hover:text-blue-400 transition-colors py-2"
+                  title="Refresh GitHub data and clear cache"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span>Refresh Data</span>
+                </button>
+                <button 
+                  onClick={() => {
+                    localStorage.clear();
+                    window.location.reload();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex items-center justify-center space-x-2 text-gray-300 hover:text-red-400 transition-colors py-2"
+                  title="Force refresh all data and clear all cache"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span>Force Refresh</span>
+                </button>
+              </div>
+            </div>
             <button className="button-primary text-sm px-4 py-2 mx-auto mt-2">
               GET STARTED
             </button>
@@ -66,7 +113,7 @@ const MobileNavigation = dynamic(() => Promise.resolve(({
       )}
     </>
   );
-}), { ssr: false });
+};
 
 // Custom hook for hydration safety
 function useHydrated() {
@@ -282,11 +329,11 @@ const Home = React.memo(function Home() {
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white videoScrubber">
+    <div className="min-h-screen text-white videoScrubber">
 
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50" style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
+        backgroundColor: 'rgba(22, 22, 22, 0.9)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(55, 65, 81, 0.5)'
       }}>
@@ -296,19 +343,19 @@ const Home = React.memo(function Home() {
             
             {/* Desktop Navigation */}
             <div className="hidden md:flex space-x-8">
+              <a href="#about" className="nav-link">ABOUT</a>
               <a href="#features" className="nav-link">FEATURES</a>
               <a href="#team" className="nav-link">TEAM</a>
               <a href="#services" className="nav-link">SERVICES</a>
               <a href="#contact" className="nav-link">CONTACT</a>
+              <ToolsDropdown />
             </div>
             
-            {/* Mobile Navigation - Client-side only */}
-            {hydrated && (
-              <MobileNavigation 
-                mobileMenuOpen={mobileMenuOpen}
-                setMobileMenuOpen={setMobileMenuOpen}
-              />
-            )}
+            {/* Mobile Navigation */}
+            <MobileNavigation 
+              mobileMenuOpen={mobileMenuOpen}
+              setMobileMenuOpen={setMobileMenuOpen}
+            />
             
             <button className="button-primary text-sm px-4 py-2 hidden md:block">
               GET STARTED
@@ -430,9 +477,63 @@ const Home = React.memo(function Home() {
         </div>
       </section>
 
+      {/* About Me Section */}
+      <section id="about" className="py-24">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid lg:grid-cols-3 gap-12 items-start">
+            {/* Profile Image */}
+            <div className="lg:col-span-1">
+              <div className="relative w-64 h-64 mx-auto lg:mx-0">
+                <div className="w-full h-full rounded-full overflow-hidden bg-white shadow-lg">
+                  <img 
+                    src="https://github.com/omeans-team.png" 
+                    alt="Aris Hadisopiyan - Programmer" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* About Content */}
+            <div className="lg:col-span-2 space-y-8">
+              <div>
+                <h2 className="text-4xl font-bold text-white mb-4">
+                  About Me
+                </h2>
+                <p className="text-xl text-red-400 mb-6 font-medium">
+                  A Lead Full-Stack Developer & Game Developer based in Indonesia
+                </p>
+                <p className="text-gray-omeans leading-relaxed text-lg mb-6">
+                  I <span className="text-red-400 underline font-medium">design and develop</span> services for customers of all sizes, specializing in creating stylish, modern websites, web services and online stores. My passion is to design digital user experiences through the bold interface and meaningful interactions.
+                </p>
+              </div>
+
+              {/* GitHub Personal Details */}
+              <GitHubPersonalInfo />
+            </div>
+          </div>
+
+          {/* GitHub Profile Card */}
+          <div className="mt-12">
+            <GitHubProfileCard />
+          </div>
+          
+          {/* GitHub Profile Stats */}
+          <div className="mt-8">
+            <GitHubProfileStats />
+          </div>
+
+          {/* Stats Cards */}
+          <GitHubStats />
+          
+          {/* GitHub Info */}
+          <GitHubInfo username="omeans-team" />
+        </div>
+      </section>
+
       {/* Features Section */}
       <section id="features" className="py-24" style={{
-        background: 'linear-gradient(to bottom, #000000, #111827)'
+        background: 'linear-gradient(to bottom, #111827, #1f2937)'
       }}>
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
@@ -491,7 +592,7 @@ const Home = React.memo(function Home() {
       </section>
 
       {/* Team Section */}
-      <section id="team" className="py-24 bg-black">
+      <section id="team" className="py-24">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 gradient-text">
@@ -624,7 +725,7 @@ const Home = React.memo(function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 bg-black">
+      <section id="contact" className="py-24">
         <div className="max-w-5xl mx-auto px-6 text-center">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-8 gradient-text">
             GET STARTED

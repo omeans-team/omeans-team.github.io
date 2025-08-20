@@ -13,11 +13,33 @@
   }
 
   .button-primary {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25 border-none cursor-pointer;
+    background-color: #252525;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    @apply text-white-omeans font-bold py-4 px-8 rounded-lg transition-all duration-300 border-none cursor-pointer;
+  }
+
+  .button-primary:hover {
+    background-color: #202020;
+    color: #e47909;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05);
+    transform: scale(0.98);
+    text-decoration: none;
   }
 
   .button-secondary {
-    @apply border-2 border-gray-600 text-gray-300 font-bold py-4 px-8 rounded-lg transition-all duration-300 hover:scale-105 hover:border-blue-400 hover:text-blue-400 bg-transparent cursor-pointer;
+    background-color: #252525;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1);
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    @apply text-white-omeans font-bold py-4 px-8 rounded-lg transition-all duration-300 hover:text-blue-400 cursor-pointer;
+  }
+
+  .button-secondary:hover {
+    background-color: #202020;
+    color: #e47909;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05);
+    transform: scale(0.98);
+    text-decoration: none;
   }
 
   .nav-link {
@@ -52,6 +74,50 @@
     @apply transition-all duration-300 hover:scale-105;
   }
 
+  .text-gray-omeans {
+    color: #7b7b7b;
+  }
+  .text-white-omeans {
+    color: #dadada;
+  }
+
+  .text-orange-omeans {
+    color: #e47909;
+  }
+
+  .bg-dark-omeans {
+    background-color: #252525;
+  }
+
+  .box-shadow-omeans-out {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .box-shadow-omeans-in {
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05);
+  }
+
+  .stats-card {
+    background-color: #252525;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3), 0 1px 0 rgba(255,255,255,0.1);
+    @apply rounded-lg p-6 text-center transition-all duration-300;
+  }
+
+  .stats-card:hover {
+    background-color: #202020;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.05);
+    transform: scale(0.98);
+  }
+
+  .stats-card:hover .text-white-omeans {
+    color: #e47909 !important;
+  }
+
+  .stats-card:hover .text-blue-300 {
+    color: #e47909 !important;
+  }
+
+
 }
 
 /* Base styles */
@@ -67,7 +133,7 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  background-color: #000000;
+  background-color: #222222;
   color: #ffffff;
   line-height: 1.6;
 }
@@ -106,7 +172,7 @@ body {
 .videoScrubber .videoHero {
   --highlight-color: #8cc63e;
   --primary-color: #404040;
-  --secondary-color: #000000;
+  --secondary-color: #222222;
   font-size: calc(16px + 0.5vmax);
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   line-height: 1.5;
