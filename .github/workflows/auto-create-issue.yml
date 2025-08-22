@@ -347,12 +347,11 @@ jobs:
                 repo: context.repo.repo,
                 title: issueTitle,
                 body: issueBody,
-                labels: labels,
-                assignees: [context.payload.head_commit.author.name] // Auto assign berdasarkan user push
+                labels: labels
+                // Removed assignees to avoid validation error
               });
               
               console.log('✅ Issue created successfully: #' + issue.data.number);
-              console.log('👤 Auto-assigned to:', context.payload.head_commit.author.name);
               console.log('🏷️ Labels applied:', labels);
               
               // Simpan issue number untuk step berikutnya
@@ -451,9 +450,10 @@ jobs:
                   '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                   '**Message:** ' + context.payload.head_commit.message + '\n' +
                   '**Change Types:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
-                  '*Issue creation failed due to permissions, but update was processed successfully.*';
+                  '*Issue creation failed due to assignee validation error, but update was processed successfully.*';
                 
                 console.log('✅ Fallback comment created successfully');
+                console.log('⚠️ Issue creation failed due to assignee validation error');
               } catch (fallbackError) {
                 console.error('❌ Failed to create fallback comment:', fallbackError.message);
               }
