@@ -1,4 +1,4 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   output: 'export',
@@ -6,9 +6,10 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: true
   },
-  distDir: 'out',
-  // Note: Headers configuration is not supported with output: 'export'
-  // Cache headers are handled via .htaccess file for Apache servers
-};
+  // Disable static export temporarily to fix build issues
+  experimental: {
+    esmExternals: false
+  }
+}
 
-export default nextConfig;
+export default nextConfig

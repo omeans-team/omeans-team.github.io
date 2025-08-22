@@ -38,12 +38,13 @@
     "create-issue": "bash scripts/create-issue-on-push.sh",
     "create-issue-win": "scripts\\create-issue-on-push.bat",
     "smart-issue": "bash scripts/smart-create-issue.sh",
-              "setup-live": "bash scripts/setup-live-branch.sh",
-          "setup-live-win": "scripts\\setup-live-branch.bat",
-          "setup-live-clean": "bash scripts/setup-live-branch-clean.sh",
-          "setup-live-clean-win": "scripts\\setup-live-branch-clean.bat",
-          "setup-live-ultra": "bash scripts/setup-live-branch-ultra-clean.sh",
-          "setup-live-separate": "bash scripts/setup-separate-live-repo.sh",
+    "setup-live": "bash scripts/setup-live-branch.sh",
+    "setup-live-win": "scripts\\setup-live-branch.bat",
+    "setup-live-clean": "bash scripts/setup-live-branch-clean.sh",
+    "setup-live-clean-win": "scripts\\setup-live-branch-clean.bat",
+    "setup-live-ultra": "bash scripts/setup-live-branch-ultra-clean.sh",
+    "setup-live-separate": "bash scripts/setup-separate-live-repo.sh",
+    "setup-live-separate-fixed": "bash scripts/setup-separate-live-repo-fixed.sh",
     "test-deployment": "bash scripts/test-deployment.sh",
     "close-issues": "bash scripts/close-issues-on-push.sh",
     "close-issues-win": "scripts\\close-issues-on-push.bat",
@@ -56,6 +57,8 @@
   },
   "dependencies": {
     "@primer/octicons-react": "^19.15.5",
+    "@typescript-eslint/eslint-plugin": "^8.40.0",
+    "@typescript-eslint/parser": "^8.40.0",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0"
@@ -70,6 +73,6 @@
     "eslint-config-next": "15.4.5",
     "postcss": "^8.4.0",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5"
+    "typescript": "5.9.2"
   }
 }
