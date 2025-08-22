@@ -43,6 +43,7 @@
           "setup-live-clean": "bash scripts/setup-live-branch-clean.sh",
           "setup-live-clean-win": "scripts\\setup-live-branch-clean.bat",
           "setup-live-ultra": "bash scripts/setup-live-branch-ultra-clean.sh",
+          "setup-live-separate": "bash scripts/setup-separate-live-repo.sh",
     "test-deployment": "bash scripts/test-deployment.sh",
     "close-issues": "bash scripts/close-issues-on-push.sh",
     "close-issues-win": "scripts\\close-issues-on-push.bat",

@@ -1,0 +1,106 @@
+name: Deploy to Separate Live Repository
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    
+    steps:
+      - name: Checkout main repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build static files
+        run: npm run build
+      
+      - name: Deploy to separate live repository
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          destination_dir: .
+          publish_branch: main
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy static files from main repository'
+          external_repository: omeans-team/omeans-team-live
+      
+      - name: Create deployment summary
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.payload.after
+            });
+            
+            const changedFiles = commits.files || [];
+            const additions = changedFiles.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = changedFiles.reduce((sum, file) => sum + file.deletions, 0);
+            
+            const summary = `## 🚀 Live Repository Deployment Summary
+            
+            **Live Repository:** \`omeans-team/omeans-team-live\` (public)
+            **Source Repository:** \`${context.repo.owner}/${context.repo.repo}\` (private)
+            **Commit:** \`${context.payload.head_commit.id.substring(0, 7)}\`
+            **Author:** ${context.payload.head_commit.author.name}
+            **Date:** ${new Date(context.payload.head_commit.timestamp).toLocaleString()}
+            
+            ### 📊 Build Statistics
+            - **Files Changed:** ${changedFiles.length} files
+            - **Additions:** +${additions} lines
+            - **Deletions:** -${deletions} lines
+            - **Total Changes:** ${additions + deletions} lines
+            
+            ### 🔗 Links
+            - **Live Site:** https://omeans-team.github.io/omeans-team-live/
+            - **Source Code:** https://github.com/${context.repo.owner}/${context.repo.repo} (private)
+            - **Live Repository:** https://github.com/omeans-team/omeans-team-live
+            
+            ### 📝 Changes Made
+            \`\`\`
+            ${context.payload.head_commit.message}
+            \`\`\`
+            
+            ---
+            *This deployment was automatically generated from the private main repository.*`;
+            
+            try {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚀 Live Repository Deployed: ' + context.payload.head_commit.message.split('\n')[0],
+                body: summary,
+                labels: ['deployment', 'live-repository', 'auto-generated']
+              });
+              
+              console.log('✅ Deployment summary issue created: #' + issue.data.number);
+            } catch (error) {
+              console.error('❌ Failed to create deployment summary:', error.message);
+            }
