@@ -56,8 +56,8 @@ jobs:
         run: |
           echo "🚀 Deploying to live repository..."
           
-          # Clone the live repository
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git live-repo
+          # Clone the live repository with token
+          git clone https://${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git live-repo
           cd live-repo
           
           # Switch to main branch
@@ -82,8 +82,8 @@ jobs:
           # Commit
           git commit -m "Deploy static files from main repository - $(date)" || echo "No changes to commit"
           
-          # Push to live repository
-          git push origin main --force
+          # Push to live repository with token
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git main --force
           
           echo "✅ Deployment completed"
       
