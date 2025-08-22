@@ -346,8 +346,11 @@ jobs:
               console.log('🏷️ Labels applied:', labels);
               
               // Auto close issue setelah 10 detik untuk menandai sebagai complete
+              console.log('⏱️ Starting 10-second countdown timer for issue #' + issue.data.number);
               setTimeout(async () => {
                 try {
+                  console.log('🔄 Auto-completing issue #' + issue.data.number + ' after 10 seconds...');
+                  
                   // Update issue body dengan status complete
                   const completeBody = issueBody.replace(
                     '## ⏱️ Auto Complete Countdown\n\n' +
@@ -364,6 +367,7 @@ jobs:
                     '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
                   );
                   
+                  console.log('📝 Updating issue body to complete status...');
                   await github.rest.issues.update({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -371,6 +375,8 @@ jobs:
                     body: completeBody,
                     state: 'closed'
                   });
+                  
+                  console.log('✅ Issue #' + issue.data.number + ' status updated to closed');
                   
                   // Tambahkan komentar penutupan
                   const completeComment = '## ✅ Issue Auto Complete\n\n' +
@@ -385,6 +391,7 @@ jobs:
                     '---\n' +
                     '*This comment was automatically added by GitHub Actions.*';
                   
+                  console.log('💬 Adding completion comment...');
                   await github.rest.issues.createComment({
                     owner: context.repo.owner,
                     repo: context.repo.repo,
@@ -393,8 +400,10 @@ jobs:
                   });
                   
                   console.log('✅ Issue #' + issue.data.number + ' auto-completed successfully');
+                  console.log('🎉 Auto-complete process finished for issue #' + issue.data.number);
                 } catch (error) {
                   console.error('❌ Failed to auto-complete issue #' + issue.data.number + ':', error.message);
+                  console.error('Error details:', JSON.stringify(error, null, 2));
                 }
               }, 10000); // 10 detik delay
               
