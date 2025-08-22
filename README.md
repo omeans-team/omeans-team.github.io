@@ -44,6 +44,10 @@ npm run build
 
 This repository includes automated issue creation and management based on Git commits and pushes.
 
+## 🚀 Deployment Status
+
+Current deployment workflow is simplified and optimized for reliability.
+
 ---
 
 *Last updated: $(date)*
