@@ -1,4 +1,4 @@
-name: Auto Create Issue on Push
+name: Auto Create and Close Issues on Push
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - 'docs/**'
 
 jobs:
-  create-issue:
+  manage-issues:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     
@@ -19,7 +19,59 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         
-      - name: Create Issue
+      - name: Close Previous Issues
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Menutup issue auto-generated yang sudah ada
+            const { data: existingIssues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'auto-generated'
+            });
+            
+            if (existingIssues.length > 0) {
+              console.log(`🔍 Found ${existingIssues.length} auto-generated issues to close`);
+              
+              for (const issue of existingIssues) {
+                try {
+                  // Menutup issue
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    state: 'closed'
+                  });
+                  
+                  // Menambahkan komentar penutupan
+                  const commentBody = '## ✅ Issue Closed Automatically\n\n' +
+                    'This issue has been automatically closed due to a new push to the `' + context.ref.replace('refs/heads/', '') + '` branch.\n\n' +
+                    '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
+                    '**Author:** ' + context.payload.head_commit.author.name + '\n' +
+                    '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
+                    '**Reason:** New update has been pushed, making this issue outdated.\n\n' +
+                    '---\n' +
+                    '*This comment was automatically added by GitHub Actions.*';
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.number,
+                    body: commentBody
+                  });
+                  
+                  console.log(`✅ Closed issue #${issue.number}: ${issue.title}`);
+                } catch (error) {
+                  console.error(`❌ Failed to close issue #${issue.number}:`, error.message);
+                }
+              }
+            } else {
+              console.log('✅ No auto-generated issues to close');
+            }
+        
+      - name: Create New Issue
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

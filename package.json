@@ -37,8 +37,12 @@
     "setup-auto-issue-win": "scripts\\setup-git-hooks.bat",
     "create-issue": "bash scripts/create-issue-on-push.sh",
     "create-issue-win": "scripts\\create-issue-on-push.bat",
+    "close-issues": "bash scripts/close-issues-on-push.sh",
+    "close-issues-win": "scripts\\close-issues-on-push.bat",
     "test-issue": "bash scripts/test-issue-creation.sh",
     "test-issue-win": "scripts\\test-issue-creation.bat",
+    "test-close": "bash scripts/test-close-issues.sh",
+    "test-close-win": "scripts\\test-close-issues.bat",
     "setup-env": "bash scripts/setup-env.sh",
     "setup-env-win": "scripts\\setup-env.bat"
   },
