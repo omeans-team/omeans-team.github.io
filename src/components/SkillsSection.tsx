@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import { useGoogleAnalytics } from '@/hooks/useGoogleAnalytics';
 import { 
   PackageIcon,
   ZapIcon,
@@ -82,6 +83,7 @@ const proficiencyLevels = {
 };
 
 const SkillsSection: React.FC = () => {
+  const { trackEvent, trackButtonClick } = useGoogleAnalytics();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedProficiency, setSelectedProficiency] = useState<string>('All');
   const [showAllCategories, setShowAllCategories] = useState<boolean>(false);
@@ -122,7 +124,10 @@ const SkillsSection: React.FC = () => {
                 {categories.map(category => (
                   <button
                     key={category}
-                    onClick={() => setSelectedCategory(category)}
+                    onClick={() => {
+                      setSelectedCategory(category);
+                      trackEvent('filter_change', 'skills', `category_${category.toLowerCase()}`);
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                       selectedCategory === category
                         ? 'bg-blue-500 text-white shadow-lg'
@@ -170,7 +175,10 @@ const SkillsSection: React.FC = () => {
                 {proficiencies.map(proficiency => (
                   <button
                     key={proficiency}
-                    onClick={() => setSelectedProficiency(proficiency)}
+                    onClick={() => {
+                      setSelectedProficiency(proficiency);
+                      trackEvent('filter_change', 'skills', `proficiency_${proficiency.toLowerCase()}`);
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                       selectedProficiency === proficiency
                         ? 'bg-purple-500 text-white shadow-lg'

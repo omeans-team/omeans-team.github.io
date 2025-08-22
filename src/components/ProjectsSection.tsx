@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { useGoogleAnalytics } from '@/hooks/useGoogleAnalytics';
 import { 
   GlobeIcon, 
   DeviceMobileIcon, 
@@ -108,6 +109,7 @@ const projects: Project[] = [
 ];
 
 const ProjectsSection: React.FC = () => {
+  const { trackExternalLink, trackButtonClick } = useGoogleAnalytics();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedTechnology, setSelectedTechnology] = useState<string>('All');
   const [showFeaturedOnly, setShowFeaturedOnly] = useState<boolean>(false);
@@ -338,7 +340,10 @@ const ProjectsSection: React.FC = () => {
                          target="_blank"
                          rel="noopener noreferrer"
                          className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center gap-2"
-                         onClick={(e) => e.stopPropagation()}
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           trackExternalLink(project.liveDemo!);
+                         }}
                        >
                                                    <RocketIcon size={16} />
                           Live Demo
@@ -350,7 +355,10 @@ const ProjectsSection: React.FC = () => {
                          target="_blank"
                          rel="noopener noreferrer"
                          className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-700 transition-colors flex items-center gap-2"
-                         onClick={(e) => e.stopPropagation()}
+                         onClick={(e) => {
+                           e.stopPropagation();
+                           trackExternalLink(project.githubRepo!);
+                         }}
                        >
                                                    <RepoIcon size={16} />
                           GitHub
@@ -419,6 +427,7 @@ const ProjectsSection: React.FC = () => {
                        target="_blank"
                        rel="noopener noreferrer"
                        className="flex-1 bg-blue-500 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                       onClick={() => trackExternalLink(project.liveDemo!)}
                      >
                                                <RocketIcon size={16} />
                         View Demo
@@ -430,6 +439,7 @@ const ProjectsSection: React.FC = () => {
                        target="_blank"
                        rel="noopener noreferrer"
                        className="flex-1 bg-gray-700 text-white text-center py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+                       onClick={() => trackExternalLink(project.githubRepo!)}
                      >
                                                <BookIcon size={16} />
                         View Code

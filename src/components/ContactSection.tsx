@@ -5,6 +5,7 @@ import {
   CheckIcon,
   AlertIcon
 } from '@primer/octicons-react';
+import { useGoogleAnalytics } from '@/hooks/useGoogleAnalytics';
 
 interface FormData {
   name: string;
@@ -21,6 +22,8 @@ interface FormErrors {
 }
 
 const ContactSection: React.FC = () => {
+  const { trackFormSubmission, trackButtonClick } = useGoogleAnalytics();
+  
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
@@ -95,6 +98,9 @@ const ContactSection: React.FC = () => {
     setSubmitStatus('idle');
 
     try {
+      // Track form submission
+      trackFormSubmission('contact_form');
+      
       // Simulate API call - replace with actual email service
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -237,6 +243,7 @@ const ContactSection: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
+              onClick={() => trackButtonClick('send_message', 'contact_form')}
               className={`w-full py-3 px-6 rounded-lg font-medium transition-all duration-300 ${
                 isSubmitting
                   ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
