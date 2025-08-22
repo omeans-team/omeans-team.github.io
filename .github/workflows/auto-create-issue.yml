@@ -460,18 +460,22 @@ jobs:
             }
       
       - name: Auto Complete Issue
-        if: steps.issue-management.outputs.issue-number != '' && steps.issue-management.outputs.issue-number != 'null'
+        if: always() && steps.issue-management.outputs.issue-number != '' && steps.issue-management.outputs.issue-number != 'null'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const issueNumber = ${{ steps.issue-management.outputs.issue-number }};
-            const issueBody = ${{ steps.issue-management.outputs.issue-body }};
-            const changeTypes = '${{ steps.issue-management.outputs.change-types }}'.split(',');
+            console.log('🔍 Checking if auto-complete step should run...');
+            console.log('Issue number output:', '${{ steps.issue-management.outputs.issue-number }}');
+            
+            const issueNumber = '${{ steps.issue-management.outputs.issue-number }}';
+            
+            if (!issueNumber || issueNumber === '' || issueNumber === 'null') {
+              console.log('❌ No valid issue number found, skipping auto-complete');
+              return;
+            }
             
             console.log('⏱️ Starting auto-complete process for issue #' + issueNumber);
-            console.log('📝 Issue body length:', issueBody.length);
-            console.log('🏷️ Change types:', changeTypes);
             
             // Wait for 10 seconds
             console.log('⏳ Waiting 10 seconds before auto-completing...');
@@ -481,26 +485,20 @@ jobs:
               console.log('🔄 Auto-completing issue #' + issueNumber + ' after 10 seconds...');
               
               // Update issue body dengan status complete
-              const completeBody = issueBody.replace(
-                '## ⏱️ Auto Complete Countdown\n\n' +
-                '**Status:** 🔄 Processing...\n' +
-                '**Time Remaining:** 10 seconds\n' +
-                '**Progress:** ██████████ 100%\n\n' +
-                '> ⚡ This issue will automatically complete in **10 seconds**\n' +
-                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
-                '## ✅ Auto Complete Finished\n\n' +
+              const completeBody = '## ✅ Auto Complete Finished\n\n' +
                 '**Status:** ✅ Complete\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
                 '**Progress:** ██████████ 100% ✅\n\n' +
                 '> 🎉 This issue has been automatically completed!\n' +
-                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
-              );
+                '> 📊 Auto-complete process finished successfully\n\n' +
+                '---\n' +
+                '*This issue was automatically completed by GitHub Actions.*';
               
               console.log('📝 Updating issue body to complete status...');
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issueNumber,
+                issue_number: parseInt(issueNumber),
                 body: completeBody,
                 state: 'closed'
               });
@@ -515,7 +513,6 @@ jobs:
                 '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                 '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
-                '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
                 '**Reason:** Changes have been successfully processed and deployed.\n\n' +
                 '---\n' +
                 '*This comment was automatically added by GitHub Actions.*';
@@ -524,7 +521,7 @@ jobs:
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                issue_number: issueNumber,
+                issue_number: parseInt(issueNumber),
                 body: completeComment
               });
               
