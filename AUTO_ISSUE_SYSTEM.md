@@ -11,7 +11,7 @@ Sistem ini secara otomatis membuat dan menutup issue berdasarkan push ke reposit
 - Smart detection tipe perubahan
 - Auto-assign ke user yang push
 - Label otomatis berdasarkan tipe perubahan
-- **Status: Open → Auto Complete** (5 detik delay)
+- **Status: Open → Auto Complete** (10 detik delay)
 
 ### ✅ **Auto Close Issues**
 - Menutup issue auto-generated yang sudah ada
@@ -20,8 +20,8 @@ Sistem ini secara otomatis membuat dan menutup issue berdasarkan push ke reposit
 
 ### ✅ **Auto Complete Process**
 - Issue dibuat dengan status "🔄 Processing..."
-- **Countdown Timer** terlihat di issue body (5 detik)
-- Setelah 5 detik otomatis berubah menjadi "✅ Complete"
+- **Countdown Timer** terlihat di issue body (10 detik)
+- Setelah 10 detik otomatis berubah menjadi "✅ Complete"
 - Status issue berubah dari "open" ke "closed"
 - Menambahkan komentar "Issue Auto Complete"
 - **Progress Bar** menunjukkan status completion
@@ -270,10 +270,10 @@ src/styles/login.css
 ## ⏱️ Auto Complete Countdown
 
 **Status:** 🔄 Processing...
-**Time Remaining:** 5 seconds
+**Time Remaining:** 10 seconds
 **Progress:** ██████████ 100%
 
-> ⚡ This issue will automatically complete in **5 seconds**
+> ⚡ This issue will automatically complete in **10 seconds**
 > 📊 Change Types Detected: **bugfix, frontend**
 ```
 
@@ -336,19 +336,25 @@ bug, auto-generated, update, push
 
 ## 🔄 Auto Complete Process
 
+### **📊 Status Flow:**
+1. **Issue Created** → Status: "🔄 Processing..."
+2. **Countdown Timer** → 10 seconds remaining
+3. **GitHub UI Shows** → "opened now" / "opened in X seconds"
+4. **Auto Complete** → Status: "✅ Complete" (after 10 seconds)
+
 ### **Step 1: Issue Creation (Open)**
 ```markdown
 ## ⏱️ Auto Complete Countdown
 
 **Status:** 🔄 Processing...
-**Time Remaining:** 5 seconds
+**Time Remaining:** 10 seconds
 **Progress:** ██████████ 100%
 
-> ⚡ This issue will automatically complete in **5 seconds**
+> ⚡ This issue will automatically complete in **10 seconds**
 > 📊 Change Types Detected: **bugfix, frontend**
 ```
 
-### **Step 2: Auto Complete (After 5 seconds)**
+### **Step 2: Auto Complete (After 10 seconds)**
 ```markdown
 ## ✅ Auto Complete Finished
 

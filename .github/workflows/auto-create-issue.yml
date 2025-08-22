@@ -326,9 +326,9 @@ jobs:
               '*This issue was automatically created by GitHub Actions on push to ' + context.ref.replace('refs/heads/', '') + ' branch.*\n\n' +
               '## ⏱️ Auto Complete Countdown\n\n' +
               '**Status:** 🔄 Processing...\n' +
-              '**Time Remaining:** 5 seconds\n' +
+              '**Time Remaining:** 10 seconds\n' +
               '**Progress:** ██████████ 100%\n\n' +
-              '> ⚡ This issue will automatically complete in **5 seconds**\n' +
+              '> ⚡ This issue will automatically complete in **10 seconds**\n' +
               '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**';
 
             try {
@@ -345,16 +345,16 @@ jobs:
               console.log('👤 Auto-assigned to:', context.payload.head_commit.author.name);
               console.log('🏷️ Labels applied:', labels);
               
-              // Auto close issue setelah 5 detik untuk menandai sebagai complete
+              // Auto close issue setelah 10 detik untuk menandai sebagai complete
               setTimeout(async () => {
                 try {
                   // Update issue body dengan status complete
                   const completeBody = issueBody.replace(
                     '## ⏱️ Auto Complete Countdown\n\n' +
                     '**Status:** 🔄 Processing...\n' +
-                    '**Time Remaining:** 5 seconds\n' +
+                    '**Time Remaining:** 10 seconds\n' +
                     '**Progress:** ██████████ 100%\n\n' +
-                    '> ⚡ This issue will automatically complete in **5 seconds**\n' +
+                    '> ⚡ This issue will automatically complete in **10 seconds**\n' +
                     '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
                     '## ✅ Auto Complete Finished\n\n' +
                     '**Status:** ✅ Complete\n' +
@@ -396,7 +396,7 @@ jobs:
                 } catch (error) {
                   console.error('❌ Failed to auto-complete issue #' + issue.data.number + ':', error.message);
                 }
-              }, 5000); // 5 detik delay
+              }, 10000); // 10 detik delay
               
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
