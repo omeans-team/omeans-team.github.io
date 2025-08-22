@@ -16,6 +16,7 @@ jobs:
       contents: write
       pages: write
       id-token: write
+      actions: write
     
     steps:
       - name: Checkout main repository
@@ -52,17 +53,39 @@ jobs:
           ls -la out/
       
       - name: Deploy to separate live repository
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./out
-          destination_dir: .
-          publish_branch: main
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy static files from main repository - $(date)'
-          external_repository: omeans-team/omeans-team-live
+        run: |
+          echo "🚀 Deploying to live repository..."
+          
+          # Clone the live repository
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git live-repo
+          cd live-repo
+          
+          # Switch to main branch
+          git checkout main || git checkout -b main
+          
+          # Remove all existing files
+          git rm -rf . || true
+          
+          # Copy static files from build output
+          cp -r ../out/* .
+          
+          # Add .nojekyll file
+          touch .nojekyll
+          
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Add all files
+          git add .
+          
+          # Commit
+          git commit -m "Deploy static files from main repository - $(date)" || echo "No changes to commit"
+          
+          # Push to live repository
+          git push origin main --force
+          
+          echo "✅ Deployment completed"
       
       - name: Verify deployment
         run: |
