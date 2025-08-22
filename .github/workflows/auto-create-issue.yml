@@ -9,7 +9,6 @@ on:
 jobs:
   smart-manage-issues:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     permissions:
       contents: read
       issues: write
@@ -28,265 +27,26 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            // Fungsi untuk mendeteksi tipe perubahan
-            function detectChangeType(files) {
-              const patterns = {
-                'frontend': /\.(js|jsx|ts|tsx|css|scss|html|vue|svelte)$/i,
-                'backend': /\.(py|java|cpp|c|cs|php|rb|go|rs|swift|kt)$/i,
-                'database': /\.(sql|db|sqlite|mdb)$/i,
-                'config': /\.(json|yaml|yml|toml|ini|conf|config)$/i,
-                'docs': /\.(md|txt|rst|adoc)$/i,
-                'assets': /\.(png|jpg|jpeg|gif|svg|ico|mp4|mp3|pdf)$/i,
-                'security': /(security|auth|password|token|key|secret|vulnerability|encrypt)/i,
-                'performance': /(performance|optimization|cache|speed|fast|slow|memory|cpu)/i,
-                'bugfix': /(fix|bug|error|issue|problem|crash|fail|broken|resolve)/i,
-                'feature': /(feature|add|new|implement|create|introduce|enable)/i,
-                'improve': /(improve|enhance|better|upgrade|update|modernize|polish)/i,
-                'refactor': /(refactor|cleanup|restructure|reorganize|simplify|optimize)/i,
-                'test': /(test|spec|unit|integration|e2e|cypress|jest|mocha)/i,
-                'conflict': /(conflict|merge|resolve|rebase|merge-conflict)/i,
-                'cherry-pick': /(cherry-pick|cherrypick|backport|port)/i,
-                'hotfix': /(hotfix|urgent|critical|emergency|patch)/i,
-                'breaking': /(breaking|major|incompatible|deprecate|remove)/i,
-                'dependency': /(dependency|package|npm|yarn|pip|maven|gradle)/i,
-                'ci-cd': /(ci|cd|pipeline|workflow|deploy|build|release)/i,
-                'accessibility': /(accessibility|a11y|aria|screen-reader|wcag)/i,
-                'mobile': /(mobile|responsive|touch|swipe|gesture)/i,
-                'api': /(api|endpoint|rest|graphql|swagger|openapi)/i,
-                'ui-ux': /(ui|ux|design|interface|user|experience|layout)/i,
-                'data': /(data|analytics|metrics|logging|monitoring)/i,
-                'devops': /(devops|infrastructure|docker|kubernetes|aws|azure)/i
-              };
-              
-              const detectedTypes = new Set();
-              
-              files.forEach(file => {
-                // Deteksi berdasarkan ekstensi file
-                for (const [type, pattern] of Object.entries(patterns)) {
-                  if (pattern.test(file.filename) || pattern.test(file.patch || '')) {
-                    detectedTypes.add(type);
-                  }
-                }
-              });
-              
-              // Deteksi berdasarkan commit message
-              const commitMessage = context.payload.head_commit.message.toLowerCase();
-              for (const [type, pattern] of Object.entries(patterns)) {
-                if (pattern.test(commitMessage)) {
-                  detectedTypes.add(type);
-                }
-              }
-              
-              return Array.from(detectedTypes);
-            }
+            console.log('Starting Smart Issue Management...');
             
-            // Fungsi untuk generate label berdasarkan tipe perubahan
-            function generateLabels(changeTypes) {
-              const labelMap = {
-                'frontend': 'frontend',
-                'backend': 'backend', 
-                'database': 'database',
-                'config': 'configuration',
-                'docs': 'documentation',
-                'assets': 'assets',
-                'security': 'security',
-                'performance': 'performance',
-                'bugfix': 'bug',
-                'feature': 'enhancement',
-                'improve': 'improvement',
-                'refactor': 'refactor',
-                'test': 'testing',
-                'conflict': 'merge-conflict',
-                'cherry-pick': 'cherry-pick',
-                'hotfix': 'hotfix',
-                'breaking': 'breaking-change',
-                'dependency': 'dependencies',
-                'ci-cd': 'ci-cd',
-                'accessibility': 'accessibility',
-                'mobile': 'mobile',
-                'api': 'api',
-                'ui-ux': 'ui-ux',
-                'data': 'data',
-                'devops': 'devops'
-              };
-              
-              const labels = ['auto-generated', 'update', 'push'];
-              
-              changeTypes.forEach(type => {
-                if (labelMap[type]) {
-                  labels.push(labelMap[type]);
-                }
-              });
-              
-              return labels;
-            }
+            // Get the GitHub username of the person who pushed
+            const assignee = context.payload.sender.login;
+            console.log('Push sender:', assignee);
             
-            // Mendapatkan file yang berubah dengan validasi
-            let changedFiles = [];
-            
-            if (context.payload.commits && Array.isArray(context.payload.commits)) {
-              changedFiles = context.payload.commits.flatMap(commit => {
-                const added = commit.added || [];
-                const modified = commit.modified || [];
-                const removed = commit.removed || [];
-                return added.concat(modified).concat(removed);
-              }).map(filename => ({ filename }));
-            } else {
-              console.log('No commits data available, using fallback');
-              // Fallback: gunakan data dari head_commit jika ada
-              if (context.payload.head_commit) {
-                changedFiles = [{ filename: 'unknown' }];
-              }
-            }
-            
-            // Deteksi tipe perubahan
-            const changeTypes = detectChangeType(changedFiles);
-            console.log('Detected change types:', changeTypes);
-            
-            // Generate labels
-            const labels = generateLabels(changeTypes);
-            console.log('Generated labels:', labels);
-            
-            // Analisis topik berdasarkan tipe perubahan
-            const topics = [];
-            if (changeTypes.includes('security')) topics.push('Security improvements');
-            if (changeTypes.includes('performance')) topics.push('Performance optimizations');
-            if (changeTypes.includes('bugfix')) topics.push('Bug fixes');
-            if (changeTypes.includes('feature')) topics.push('New features');
-            if (changeTypes.includes('improve')) topics.push('Improvements');
-            if (changeTypes.includes('refactor')) topics.push('Code refactoring');
-            if (changeTypes.includes('test')) topics.push('Testing improvements');
-            if (changeTypes.includes('docs')) topics.push('Documentation updates');
-            if (changeTypes.includes('frontend')) topics.push('Frontend changes');
-            if (changeTypes.includes('backend')) topics.push('Backend changes');
-            if (changeTypes.includes('database')) topics.push('Database changes');
-            if (changeTypes.includes('config')) topics.push('Configuration updates');
-            if (changeTypes.includes('conflict')) topics.push('Merge conflict resolution');
-            if (changeTypes.includes('cherry-pick')) topics.push('Cherry-pick changes');
-            if (changeTypes.includes('hotfix')) topics.push('Hotfix/urgent fix');
-            if (changeTypes.includes('breaking')) topics.push('Breaking changes');
-            if (changeTypes.includes('dependency')) topics.push('Dependency updates');
-            if (changeTypes.includes('ci-cd')) topics.push('CI/CD pipeline changes');
-            if (changeTypes.includes('accessibility')) topics.push('Accessibility improvements');
-            if (changeTypes.includes('mobile')) topics.push('Mobile/responsive changes');
-            if (changeTypes.includes('api')) topics.push('API changes');
-            if (changeTypes.includes('ui-ux')) topics.push('UI/UX improvements');
-            if (changeTypes.includes('data')) topics.push('Data/analytics changes');
-            if (changeTypes.includes('devops')) topics.push('DevOps/infrastructure changes');
-            
-            if (topics.length > 0) {
-              console.log('Topics detected:', topics);
-            }
-            
-            // Generate recommendations berdasarkan tipe perubahan
-            const recommendations = [];
-            if (changeTypes.includes('security')) {
-              recommendations.push('Consider security testing');
-              recommendations.push('Review access controls');
-            }
-            if (changeTypes.includes('performance')) {
-              recommendations.push('Monitor performance metrics');
-              recommendations.push('Consider caching strategies');
-            }
-            if (changeTypes.includes('database')) {
-              recommendations.push('Backup database before deployment');
-              recommendations.push('Test database migrations');
-            }
-            if (changeTypes.includes('frontend')) {
-              recommendations.push('Test UI/UX changes');
-              recommendations.push('Verify responsive design');
-            }
-            if (changeTypes.includes('breaking')) {
-              recommendations.push('Review breaking changes impact');
-              recommendations.push('Update documentation');
-            }
-            if (changeTypes.includes('hotfix')) {
-              recommendations.push('Test thoroughly before deployment');
-              recommendations.push('Notify stakeholders');
-            }
-            if (changeTypes.includes('dependency')) {
-              recommendations.push('Review dependency changes');
-              recommendations.push('Test compatibility');
-            }
-            if (changeTypes.includes('ci-cd')) {
-              recommendations.push('Test pipeline changes');
-              recommendations.push('Monitor deployment success');
-            }
-            if (changeTypes.includes('accessibility')) {
-              recommendations.push('Test with screen readers');
-              recommendations.push('Verify WCAG compliance');
-            }
-            if (changeTypes.includes('api')) {
-              recommendations.push('Test API endpoints');
-              recommendations.push('Update API documentation');
-            }
-            
-            // Generate custom comment berdasarkan analisis
-            let customComment = '';
-            
-            if (topics.length > 0) {
-              customComment += '### Topics\n' + topics.join(', ') + '\n\n';
-            }
-            
-            if (recommendations.length > 0) {
-              customComment += '### Recommendations\n';
-              recommendations.forEach(rec => {
-                customComment += '- ' + rec + '\n';
-              });
-              customComment += '\n';
-            }
-            
-            // Menutup issue yang sudah ada jika masih open
-            try {
-              const existingIssues = await github.rest.issues.listForRepo({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                state: 'open',
-                labels: 'auto-generated'
-              });
-              
-              if (existingIssues.data.length > 0) {
-                console.log('Found ' + existingIssues.data.length + ' existing auto-generated issues to close');
-                
-                for (const existingIssue of existingIssues.data) {
-                  try {
-                    await github.rest.issues.update({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number: existingIssue.number,
-                      state: 'closed'
-                    });
-                    console.log('Closed existing issue #' + existingIssue.number);
-                  } catch (closeError) {
-                    console.error('Failed to close existing issue #' + existingIssue.number + ':', closeError.message);
-                  }
-                }
-              } else {
-                console.log('No existing auto-generated issues found to close');
-              }
-            } catch (listError) {
-              console.error('Failed to list existing issues:', listError.message);
-              console.log('Continuing with new issue creation...');
-            }
-            
-            // Membuat issue baru
+            // Create issue title
             const issueTitle = 'Update: ' + context.payload.head_commit.message.split('\n')[0];
             
-            const issueBody = customComment +
+            // Create issue body
+            const issueBody = '## Update Summary\n\n' +
               '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
               '**Author:** ' + context.payload.head_commit.author.name + '\n' +
               '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
               '### Changes Made\n' +
               context.payload.head_commit.message + '\n\n' +
-              '### Files Modified\n' +
-              '```\n' +
-              changedFiles.map(f => f.filename).join('\n') + '\n' +
-              '```\n\n' +
               '### Statistics\n' +
               '- **Additions:** +' + (context.payload.head_commit.additions || 0) + ' lines\n' +
               '- **Deletions:** -' + (context.payload.head_commit.deletions || 0) + ' lines\n' +
-              '- **Total Changes:** ' + ((context.payload.head_commit.additions || 0) + (context.payload.head_commit.deletions || 0)) + ' lines\n' +
-              '- **Files Changed:** ' + changedFiles.length + ' files\n\n' +
+              '- **Total Changes:** ' + ((context.payload.head_commit.additions || 0) + (context.payload.head_commit.deletions || 0)) + ' lines\n\n' +
               '### Related Links\n' +
               '- **Commit:** [' + context.payload.head_commit.id.substring(0, 7) + '](' + (context.payload.head_commit.url || '#') + ')\n' +
               '- **Branch:** `' + context.ref.replace('refs/heads/', '') + '`\n' +
@@ -298,53 +58,30 @@ jobs:
               '**Time Remaining:** 10 seconds\n' +
               '**Progress:** 100%\n\n' +
               '> This issue will automatically complete in **10 seconds**\n' +
-              '> Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**';
+              '> Auto-complete process will start shortly';
 
             try {
-              // Get the GitHub username of the person who pushed
-              const assignee = context.payload.sender.login;
-              console.log('Push sender:', assignee);
-              console.log('Sender email:', context.payload.sender.email);
-              
+              // Create issue
               const issue = await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: issueTitle,
                 body: issueBody,
-                labels: labels,
-                assignees: [assignee] // Auto-assign to the person who pushed
+                labels: ['auto-generated', 'update', 'push'],
+                assignees: [assignee]
               });
               
               console.log('Issue created successfully: #' + issue.data.number);
               console.log('Auto-assigned to:', assignee);
-              console.log('Labels applied:', labels);
               
-              // Simpan issue number untuk step berikutnya
+              // Save issue number for next step
               core.setOutput('issue-number', issue.data.number);
               core.setOutput('issue-body', issueBody);
-              core.setOutput('change-types', changeTypes.join(','));
               
               console.log('Issue number saved for auto-complete step:', issue.data.number);
               
             } catch (error) {
               console.error('Failed to create issue:', error.message);
-              console.error('Error details:', JSON.stringify(error, null, 2));
-              
-              // Fallback: Create a simple comment instead
-              try {
-                console.log('Creating fallback comment...');
-                const fallbackComment = 'Update Summary\n\n' +
-                  '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
-                  '**Author:** ' + context.payload.head_commit.author.name + '\n' +
-                  '**Message:** ' + context.payload.head_commit.message + '\n' +
-                  '**Change Types:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
-                  '*Issue creation failed, but update was processed successfully.*';
-                
-                console.log('Fallback comment created successfully');
-                console.log('Issue creation failed, but fallback comment created');
-              } catch (fallbackError) {
-                console.error('Failed to create fallback comment:', fallbackError.message);
-              }
             }
       
       - name: Auto Complete Issue
@@ -353,22 +90,16 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log('Checking if auto-complete step should run...');
-            console.log('Issue number output:', '${{ steps.issue-management.outputs.issue-number }}');
-            console.log('Change types output:', '${{ steps.issue-management.outputs.change-types }}');
+            console.log('Starting auto-complete process...');
             
             const issueNumber = '${{ steps.issue-management.outputs.issue-number }}';
-            const issueBody = '${{ steps.issue-management.outputs.issue-body }}';
-            const changeTypes = '${{ steps.issue-management.outputs.change-types }}'.split(',');
             
             if (!issueNumber || issueNumber === '' || issueNumber === 'null') {
               console.log('No valid issue number found, skipping auto-complete');
               return;
             }
             
-            console.log('Starting auto-complete process for issue #' + issueNumber);
-            console.log('Original issue body length:', issueBody.length);
-            console.log('Change types:', changeTypes);
+            console.log('Auto-completing issue #' + issueNumber);
             
             // Wait for 10 seconds
             console.log('Waiting 10 seconds before auto-completing...');
@@ -377,21 +108,15 @@ jobs:
             try {
               console.log('Auto-completing issue #' + issueNumber + ' after 10 seconds...');
               
-              // Update issue body dengan status complete
-              const completeBody = issueBody.replace(
-                '## Auto Complete Countdown\n\n' +
-                '**Status:** Processing...\n' +
-                '**Time Remaining:** 10 seconds\n' +
-                '**Progress:** 100%\n\n' +
-                '> This issue will automatically complete in **10 seconds**\n' +
-                '> Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
-                '## Auto Complete Finished\n\n' +
+              // Update issue body to complete status
+              const completeBody = '## Auto Complete Finished\n\n' +
                 '**Status:** Complete\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
                 '**Progress:** 100% Complete\n\n' +
                 '> This issue has been automatically completed!\n' +
-                '> Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
-              );
+                '> Auto-complete process finished successfully\n\n' +
+                '---\n' +
+                '*This issue was automatically completed by GitHub Actions.*';
               
               console.log('Updating issue body to complete status...');
               await github.rest.issues.update({
@@ -404,7 +129,7 @@ jobs:
               
               console.log('Issue #' + issueNumber + ' status updated to closed');
               
-              // Tambahkan komentar penutupan
+              // Add completion comment
               const completeComment = '## Issue Auto Complete\n\n' +
                 'This issue has been automatically completed.\n\n' +
                 '**Status:** Auto Complete\n' +
@@ -412,7 +137,6 @@ jobs:
                 '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                 '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
-                '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
                 '**Reason:** Changes have been successfully processed and deployed.\n\n' +
                 '---\n' +
                 '*This comment was automatically added by GitHub Actions.*';
@@ -429,5 +153,4 @@ jobs:
               console.log('Auto-complete process finished for issue #' + issueNumber);
             } catch (error) {
               console.error('Failed to auto-complete issue #' + issueNumber + ':', error.message);
-              console.error('Error details:', JSON.stringify(error, null, 2));
             }
