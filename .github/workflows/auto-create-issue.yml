@@ -340,8 +340,8 @@ jobs:
             try {
               // Get the GitHub username of the person who pushed
               const assignee = context.payload.sender.login;
-              console.log('👤 Push sender:', assignee);
-              console.log('📧 Sender email:', context.payload.sender.email);
+              console.log('Push sender:', assignee);
+              console.log('Sender email:', context.payload.sender.email);
               
               const issue = await github.rest.issues.create({
                 owner: context.repo.owner,
@@ -352,16 +352,16 @@ jobs:
                 assignees: [assignee] // Auto-assign to the person who pushed
               });
               
-              console.log('✅ Issue created successfully: #' + issue.data.number);
-              console.log('👤 Auto-assigned to:', assignee);
-              console.log('🏷️ Labels applied:', labels);
+              console.log('Issue created successfully: #' + issue.data.number);
+              console.log('Auto-assigned to:', assignee);
+              console.log('Labels applied:', labels);
               
               // Simpan issue number untuk step berikutnya
               core.setOutput('issue-number', issue.data.number);
               core.setOutput('issue-body', issueBody);
               core.setOutput('change-types', changeTypes.join(','));
               
-              console.log('📤 Issue number saved for auto-complete step:', issue.data.number);
+              console.log('Issue number saved for auto-complete step:', issue.data.number);
               
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
@@ -369,7 +369,7 @@ jobs:
               
               // Fallback: Create a simple comment instead
               try {
-                console.log('📝 Creating fallback comment...');
+                console.log('Creating fallback comment...');
                 const fallbackComment = '🚀 **Update Summary**\n\n' +
                   '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                   '**Author:** ' + context.payload.head_commit.author.name + '\n' +
@@ -377,10 +377,10 @@ jobs:
                   '**Change Types:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
                   '*Issue creation failed, but update was processed successfully.*';
                 
-                console.log('✅ Fallback comment created successfully');
-                console.log('⚠️ Issue creation failed, but fallback comment created');
+                console.log('Fallback comment created successfully');
+                console.log('Issue creation failed, but fallback comment created');
               } catch (fallbackError) {
-                console.error('❌ Failed to create fallback comment:', fallbackError.message);
+                console.error('Failed to create fallback comment:', fallbackError.message);
               }
             }
       
@@ -390,7 +390,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log('🔍 Checking if auto-complete step should run...');
+            console.log('Checking if auto-complete step should run...');
             console.log('Issue number output:', '${{ steps.issue-management.outputs.issue-number }}');
             console.log('Change types output:', '${{ steps.issue-management.outputs.change-types }}');
             
@@ -399,38 +399,38 @@ jobs:
             const changeTypes = '${{ steps.issue-management.outputs.change-types }}'.split(',');
             
             if (!issueNumber || issueNumber === '' || issueNumber === 'null') {
-              console.log('❌ No valid issue number found, skipping auto-complete');
+              console.log('No valid issue number found, skipping auto-complete');
               return;
             }
             
-            console.log('⏱️ Starting auto-complete process for issue #' + issueNumber);
-            console.log('📝 Original issue body length:', issueBody.length);
-            console.log('🏷️ Change types:', changeTypes);
+            console.log('Starting auto-complete process for issue #' + issueNumber);
+            console.log('Original issue body length:', issueBody.length);
+            console.log('Change types:', changeTypes);
             
             // Wait for 10 seconds
-            console.log('⏳ Waiting 10 seconds before auto-completing...');
+            console.log('Waiting 10 seconds before auto-completing...');
             await new Promise(resolve => setTimeout(resolve, 10000));
             
             try {
-              console.log('🔄 Auto-completing issue #' + issueNumber + ' after 10 seconds...');
+              console.log('Auto-completing issue #' + issueNumber + ' after 10 seconds...');
               
               // Update issue body dengan status complete
               const completeBody = issueBody.replace(
-                '## ⏱️ Auto Complete Countdown\n\n' +
-                '**Status:** 🔄 Processing...\n' +
+                '## Auto Complete Countdown\n\n' +
+                '**Status:** Processing...\n' +
                 '**Time Remaining:** 10 seconds\n' +
-                '**Progress:** ██████████ 100%\n\n' +
-                '> ⚡ This issue will automatically complete in **10 seconds**\n' +
-                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
-                '## ✅ Auto Complete Finished\n\n' +
-                '**Status:** ✅ Complete\n' +
+                '**Progress:** 100%\n\n' +
+                '> This issue will automatically complete in **10 seconds**\n' +
+                '> Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
+                '## Auto Complete Finished\n\n' +
+                '**Status:** Complete\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
-                '**Progress:** ██████████ 100% ✅\n\n' +
-                '> 🎉 This issue has been automatically completed!\n' +
-                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
+                '**Progress:** 100% Complete\n\n' +
+                '> This issue has been automatically completed!\n' +
+                '> Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
               );
               
-              console.log('📝 Updating issue body to complete status...');
+              console.log('Updating issue body to complete status...');
               await github.rest.issues.update({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -439,12 +439,12 @@ jobs:
                 state: 'closed'
               });
               
-              console.log('✅ Issue #' + issueNumber + ' status updated to closed');
+              console.log('Issue #' + issueNumber + ' status updated to closed');
               
               // Tambahkan komentar penutupan
-              const completeComment = '## ✅ Issue Auto Complete\n\n' +
+              const completeComment = '## Issue Auto Complete\n\n' +
                 'This issue has been automatically completed.\n\n' +
-                '**Status:** Auto Complete ✅\n' +
+                '**Status:** Auto Complete\n' +
                 '**Triggered by:** Push to `' + context.ref.replace('refs/heads/', '') + '` branch\n' +
                 '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                 '**Author:** ' + context.payload.head_commit.author.name + '\n' +
@@ -454,7 +454,7 @@ jobs:
                 '---\n' +
                 '*This comment was automatically added by GitHub Actions.*';
               
-              console.log('💬 Adding completion comment...');
+              console.log('Adding completion comment...');
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
@@ -462,9 +462,9 @@ jobs:
                 body: completeComment
               });
               
-              console.log('✅ Issue #' + issueNumber + ' auto-completed successfully');
-              console.log('🎉 Auto-complete process finished for issue #' + issueNumber);
+              console.log('Issue #' + issueNumber + ' auto-completed successfully');
+              console.log('Auto-complete process finished for issue #' + issueNumber);
             } catch (error) {
-              console.error('❌ Failed to auto-complete issue #' + issueNumber + ':', error.message);
+              console.error('Failed to auto-complete issue #' + issueNumber + ':', error.message);
               console.error('Error details:', JSON.stringify(error, null, 2));
             }
