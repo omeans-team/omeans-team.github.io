@@ -37,6 +37,7 @@
     "setup-auto-issue-win": "scripts\\setup-git-hooks.bat",
     "create-issue": "bash scripts/create-issue-on-push.sh",
     "create-issue-win": "scripts\\create-issue-on-push.bat",
+    "smart-issue": "bash scripts/smart-create-issue.sh",
     "close-issues": "bash scripts/close-issues-on-push.sh",
     "close-issues-win": "scripts\\close-issues-on-push.bat",
     "test-issue": "bash scripts/test-issue-creation.sh",

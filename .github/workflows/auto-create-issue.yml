@@ -1,4 +1,4 @@
-name: Auto Create and Close Issues on Push
+name: Smart Auto Create and Close Issues on Push
 
 on:
   push:
@@ -11,19 +11,182 @@ on:
       - 'docs/**'
 
 jobs:
-  manage-issues:
+  smart-manage-issues:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
         
-      - name: Close Previous Issues
+      - name: Smart Issue Management
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            // Fungsi untuk mendeteksi tipe perubahan
+            function detectChangeType(files) {
+              const patterns = {
+                'frontend': /\.(js|jsx|ts|tsx|css|scss|html|vue|svelte)$/i,
+                'backend': /\.(py|java|cpp|c|cs|php|rb|go|rs|swift|kt)$/i,
+                'database': /\.(sql|db|sqlite|mdb)$/i,
+                'config': /\.(json|yaml|yml|toml|ini|conf|config)$/i,
+                'docs': /\.(md|txt|rst|adoc)$/i,
+                'assets': /\.(png|jpg|jpeg|gif|svg|ico|mp4|mp3|pdf)$/i,
+                'security': /(security|auth|password|token|key|secret)/i,
+                'performance': /(performance|optimization|cache|speed)/i,
+                'bugfix': /(fix|bug|error|issue|problem)/i,
+                'feature': /(feature|add|new|implement)/i,
+                'refactor': /(refactor|cleanup|restructure)/i,
+                'test': /(test|spec|unit|integration)/i
+              };
+              
+              const detectedTypes = new Set();
+              
+              files.forEach(file => {
+                // Deteksi berdasarkan ekstensi file
+                for (const [type, pattern] of Object.entries(patterns)) {
+                  if (pattern.test(file.filename) || pattern.test(file.patch || '')) {
+                    detectedTypes.add(type);
+                  }
+                }
+              });
+              
+              // Deteksi berdasarkan commit message
+              const commitMessage = context.payload.head_commit.message.toLowerCase();
+              for (const [type, pattern] of Object.entries(patterns)) {
+                if (pattern.test(commitMessage)) {
+                  detectedTypes.add(type);
+                }
+              }
+              
+              return Array.from(detectedTypes);
+            }
+            
+            // Fungsi untuk generate label berdasarkan tipe perubahan
+            function generateLabels(changeTypes) {
+              const labelMap = {
+                'frontend': 'frontend',
+                'backend': 'backend', 
+                'database': 'database',
+                'config': 'configuration',
+                'docs': 'documentation',
+                'assets': 'assets',
+                'security': 'security',
+                'performance': 'performance',
+                'bugfix': 'bug',
+                'feature': 'enhancement',
+                'refactor': 'refactor',
+                'test': 'testing'
+              };
+              
+              const labels = ['auto-generated', 'update', 'push'];
+              
+              changeTypes.forEach(type => {
+                if (labelMap[type]) {
+                  labels.push(labelMap[type]);
+                }
+              });
+              
+              return labels;
+            }
+            
+            // Fungsi untuk generate komentar berdasarkan topik
+            function generateComment(changeTypes, commitMessage, changedFiles) {
+              let comment = '## 📝 Update Summary\n\n';
+              
+              // Analisis topik berdasarkan tipe perubahan
+              const topics = [];
+              if (changeTypes.includes('security')) topics.push('🔒 Security improvements');
+              if (changeTypes.includes('performance')) topics.push('⚡ Performance optimizations');
+              if (changeTypes.includes('bugfix')) topics.push('🐛 Bug fixes');
+              if (changeTypes.includes('feature')) topics.push('✨ New features');
+              if (changeTypes.includes('refactor')) topics.push('🔧 Code refactoring');
+              if (changeTypes.includes('test')) topics.push('🧪 Testing improvements');
+              if (changeTypes.includes('docs')) topics.push('📚 Documentation updates');
+              if (changeTypes.includes('frontend')) topics.push('🎨 Frontend changes');
+              if (changeTypes.includes('backend')) topics.push('⚙️ Backend changes');
+              if (changeTypes.includes('database')) topics.push('🗄️ Database changes');
+              if (changeTypes.includes('config')) topics.push('⚙️ Configuration updates');
+              
+              if (topics.length > 0) {
+                comment += '### 🎯 Main Topics\n';
+                topics.forEach(topic => {
+                  comment += `- ${topic}\n`;
+                });
+                comment += '\n';
+              }
+              
+              // Analisis file yang berubah
+              const fileTypes = {};
+              changedFiles.forEach(file => {
+                const ext = file.filename.split('.').pop() || 'unknown';
+                fileTypes[ext] = (fileTypes[ext] || 0) + 1;
+              });
+              
+              if (Object.keys(fileTypes).length > 0) {
+                comment += '### 📁 File Type Analysis\n';
+                Object.entries(fileTypes).forEach(([ext, count]) => {
+                  comment += `- **${ext.toUpperCase()}**: ${count} file(s)\n`;
+                });
+                comment += '\n';
+              }
+              
+              // Rekomendasi berdasarkan perubahan
+              const recommendations = [];
+              if (changeTypes.includes('security')) {
+                recommendations.push('🔍 Consider security testing');
+                recommendations.push('📋 Review access controls');
+              }
+              if (changeTypes.includes('performance')) {
+                recommendations.push('📊 Monitor performance metrics');
+                recommendations.push('⚡ Consider caching strategies');
+              }
+              if (changeTypes.includes('database')) {
+                recommendations.push('💾 Backup database before deployment');
+                recommendations.push('🔍 Test database migrations');
+              }
+              if (changeTypes.includes('frontend')) {
+                recommendations.push('🎨 Test UI/UX changes');
+                recommendations.push('📱 Verify responsive design');
+              }
+              
+              if (recommendations.length > 0) {
+                comment += '### 💡 Recommendations\n';
+                recommendations.forEach(rec => {
+                  comment += `- ${rec}\n`;
+                });
+                comment += '\n';
+              }
+              
+              return comment;
+            }
+            
+            // Mendapatkan informasi commit dan perubahan
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.payload.after
+            });
+            
+            const changedFiles = commits.files || [];
+            const additions = changedFiles.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = changedFiles.reduce((sum, file) => sum + file.deletions, 0);
+            
+            // Deteksi tipe perubahan
+            const changeTypes = detectChangeType(changedFiles);
+            console.log('🔍 Detected change types:', changeTypes);
+            
+            // Generate labels
+            const labels = generateLabels(changeTypes);
+            console.log('🏷️ Generated labels:', labels);
+            
+            // Generate komentar
+            const customComment = generateComment(changeTypes, context.payload.head_commit.message, changedFiles);
+            
             // Menutup issue auto-generated yang sudah ada
             const { data: existingIssues } = await github.rest.issues.listForRepo({
               owner: context.repo.owner,
@@ -45,13 +208,16 @@ jobs:
                     state: 'closed'
                   });
                   
-                  // Menambahkan komentar penutupan
-                  const commentBody = '## ✅ Issue Closed Automatically\n\n' +
+                  // Menambahkan komentar penutupan dengan status
+                  const closeComment = '## ✅ Issue Auto Close Complete\n\n' +
                     'This issue has been automatically closed due to a new push to the `' + context.ref.replace('refs/heads/', '') + '` branch.\n\n' +
+                    '**Status:** Auto Close Complete ✅\n' +
+                    '**Triggered by:** New push\n' +
                     '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                     '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                     '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
                     '**Reason:** New update has been pushed, making this issue outdated.\n\n' +
+                    '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
                     '---\n' +
                     '*This comment was automatically added by GitHub Actions.*';
                   
@@ -59,7 +225,7 @@ jobs:
                     owner: context.repo.owner,
                     repo: context.repo.repo,
                     issue_number: issue.number,
-                    body: commentBody
+                    body: closeComment
                   });
                   
                   console.log(`✅ Closed issue #${issue.number}: ${issue.title}`);
@@ -70,26 +236,11 @@ jobs:
             } else {
               console.log('✅ No auto-generated issues to close');
             }
-        
-      - name: Create New Issue
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const { data: commits } = await github.rest.repos.compareCommits({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              base: context.payload.before,
-              head: context.payload.after
-            });
             
-            const changedFiles = commits.files.map(file => file.filename).join(', ');
-            const additions = commits.files.reduce((sum, file) => sum + file.additions, 0);
-            const deletions = commits.files.reduce((sum, file) => sum + file.deletions, 0);
-            
+            // Membuat issue baru
             const issueTitle = '🔄 Update: ' + context.payload.head_commit.message.split('\n')[0];
             
-            const issueBody = '## 📝 Update Summary\n\n' +
+            const issueBody = customComment +
               '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
               '**Author:** ' + context.payload.head_commit.author.name + '\n' +
               '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
@@ -97,12 +248,13 @@ jobs:
               context.payload.head_commit.message + '\n\n' +
               '### 📁 Files Modified\n' +
               '```\n' +
-              changedFiles + '\n' +
+              changedFiles.map(f => f.filename).join('\n') + '\n' +
               '```\n\n' +
               '### 📊 Statistics\n' +
               '- **Additions:** +' + additions + ' lines\n' +
               '- **Deletions:** -' + deletions + ' lines\n' +
-              '- **Total Changes:** ' + (additions + deletions) + ' lines\n\n' +
+              '- **Total Changes:** ' + (additions + deletions) + ' lines\n' +
+              '- **Files Changed:** ' + changedFiles.length + ' files\n\n' +
               '### 🔗 Related Links\n' +
               '- **Commit:** [' + context.payload.head_commit.id.substring(0, 7) + '](' + context.payload.head_commit.url + ')\n' +
               '- **Branch:** `' + context.ref.replace('refs/heads/', '') + '`\n' +
@@ -116,10 +268,13 @@ jobs:
                 repo: context.repo.repo,
                 title: issueTitle,
                 body: issueBody,
-                labels: ['auto-generated', 'update', 'push']
+                labels: labels,
+                assignees: [context.payload.head_commit.author.name] // Auto assign berdasarkan user push
               });
               
               console.log('✅ Issue created successfully: #' + issue.data.number);
+              console.log('👤 Auto-assigned to:', context.payload.head_commit.author.name);
+              console.log('🏷️ Labels applied:', labels);
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
             }
