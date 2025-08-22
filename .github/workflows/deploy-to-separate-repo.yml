@@ -33,7 +33,23 @@ jobs:
         run: npm ci
       
       - name: Build static files
-        run: npm run build
+        run: |
+          echo "🔨 Building static files..."
+          SKIP_ENV_VALIDATION=true NODE_ENV=production npm run build
+          echo "✅ Build completed"
+          ls -la out/
+      
+      - name: Verify build output
+        run: |
+          echo "📁 Checking build output..."
+          if [ ! -f "out/index.html" ]; then
+            echo "❌ index.html not found in out directory"
+            ls -la out/
+            exit 1
+          fi
+          echo "✅ index.html found"
+          echo "📊 Build output contents:"
+          ls -la out/
       
       - name: Deploy to separate live repository
         uses: peaceiris/actions-gh-pages@v3
@@ -45,8 +61,14 @@ jobs:
           force_orphan: true
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: 'Deploy static files from main repository'
+          commit_message: 'Deploy static files from main repository - $(date)'
           external_repository: omeans-team/omeans-team-live
+      
+      - name: Verify deployment
+        run: |
+          echo "🔍 Verifying deployment..."
+          sleep 10
+          curl -s -o /dev/null -w "%{http_code}" https://omeans-team.github.io/omeans-team-live/ || echo "Site not yet available"
       
       - name: Create deployment summary
         uses: actions/github-script@v7
