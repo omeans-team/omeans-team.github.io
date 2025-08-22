@@ -53,6 +53,7 @@ const Home = React.memo(function Home() {
   // Test deployment with SSH keys - triggering workflow
   // Test auto-complete functionality - 10 second countdown timer
   // Test auto-complete fix - separate step implementation
+  // Test auto-assign functionality - push sender assignment
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
 
