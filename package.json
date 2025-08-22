@@ -1,7 +1,29 @@
 {
-  "name": "omeans-team.github.io",
-  "version": "0.1.0",
+  "name": "omeans-team-portfolio",
+  "version": "1.0.0",
+  "description": "Modern portfolio website for Omeans Team featuring interactive video experiences, GitHub integration, and Google Analytics tracking",
+  "keywords": [
+    "portfolio",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "video-scrubber",
+    "google-analytics",
+    "github-api",
+    "responsive-design"
+  ],
+  "author": "Omeans Team",
+  "license": "UNLICENSED",
   "private": true,
+  "homepage": "https://omeans-team.github.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/omeans-team/omeans-team.github.io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/omeans-team/omeans-team.github.io/issues"
+  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
