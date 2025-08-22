@@ -50,6 +50,7 @@ const MobileNavigation = ({
 
 
 const Home = React.memo(function Home() {
+  // Test deployment with SSH keys - triggering workflow
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('about')
 
