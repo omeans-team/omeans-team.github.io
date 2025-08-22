@@ -342,16 +342,22 @@ jobs:
               '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**';
 
             try {
+              // Get the GitHub username of the person who pushed
+              const assignee = context.payload.sender.login;
+              console.log('👤 Push sender:', assignee);
+              console.log('📧 Sender email:', context.payload.sender.email);
+              
               const issue = await github.rest.issues.create({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 title: issueTitle,
                 body: issueBody,
-                labels: labels
-                // Removed assignees to avoid validation error
+                labels: labels,
+                assignees: [assignee] // Auto-assign to the person who pushed
               });
               
               console.log('✅ Issue created successfully: #' + issue.data.number);
+              console.log('👤 Auto-assigned to:', assignee);
               console.log('🏷️ Labels applied:', labels);
               
               // Simpan issue number untuk step berikutnya
@@ -373,10 +379,10 @@ jobs:
                   '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                   '**Message:** ' + context.payload.head_commit.message + '\n' +
                   '**Change Types:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
-                  '*Issue creation failed due to assignee validation error, but update was processed successfully.*';
+                  '*Issue creation failed, but update was processed successfully.*';
                 
                 console.log('✅ Fallback comment created successfully');
-                console.log('⚠️ Issue creation failed due to assignee validation error');
+                console.log('⚠️ Issue creation failed, but fallback comment created');
               } catch (fallbackError) {
                 console.error('❌ Failed to create fallback comment:', fallbackError.message);
               }
