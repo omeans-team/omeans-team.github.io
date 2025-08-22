@@ -13,6 +13,7 @@
     "setup-github-win": "scripts\\setup-github.bat"
   },
   "dependencies": {
+    "@primer/octicons-react": "^19.15.5",
     "next": "15.4.5",
     "react": "19.1.0",
     "react-dom": "19.1.0"

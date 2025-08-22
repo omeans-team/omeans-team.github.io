@@ -2,6 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Remove focus outline globally */
+* {
+  outline: none;
+}
+
+/* Custom focus styles for accessibility */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
 /* Custom styles */
 @layer components {
   .gradient-text {
