@@ -324,7 +324,12 @@ jobs:
               '- **Repository:** [' + context.repo.owner + '/' + context.repo.repo + '](' + context.payload.repository.html_url + ')\n\n' +
               '---\n' +
               '*This issue was automatically created by GitHub Actions on push to ' + context.ref.replace('refs/heads/', '') + ' branch.*\n\n' +
-              '**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)';
+              '## ⏱️ Auto Complete Countdown\n\n' +
+              '**Status:** 🔄 Processing...\n' +
+              '**Time Remaining:** 5 seconds\n' +
+              '**Progress:** ██████████ 100%\n\n' +
+              '> ⚡ This issue will automatically complete in **5 seconds**\n' +
+              '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**';
 
             try {
               const issue = await github.rest.issues.create({
@@ -345,8 +350,18 @@ jobs:
                 try {
                   // Update issue body dengan status complete
                   const completeBody = issueBody.replace(
-                    '**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)',
-                    '**Status:** ✅ Complete'
+                    '## ⏱️ Auto Complete Countdown\n\n' +
+                    '**Status:** 🔄 Processing...\n' +
+                    '**Time Remaining:** 5 seconds\n' +
+                    '**Progress:** ██████████ 100%\n\n' +
+                    '> ⚡ This issue will automatically complete in **5 seconds**\n' +
+                    '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
+                    '## ✅ Auto Complete Finished\n\n' +
+                    '**Status:** ✅ Complete\n' +
+                    '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
+                    '**Progress:** ██████████ 100% ✅\n\n' +
+                    '> 🎉 This issue has been automatically completed!\n' +
+                    '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
                   );
                   
                   await github.rest.issues.update({

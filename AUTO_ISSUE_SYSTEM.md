@@ -20,9 +20,11 @@ Sistem ini secara otomatis membuat dan menutup issue berdasarkan push ke reposit
 
 ### ✅ **Auto Complete Process**
 - Issue dibuat dengan status "🔄 Processing..."
+- **Countdown Timer** terlihat di issue body (5 detik)
 - Setelah 5 detik otomatis berubah menjadi "✅ Complete"
 - Status issue berubah dari "open" ke "closed"
 - Menambahkan komentar "Issue Auto Complete"
+- **Progress Bar** menunjukkan status completion
 
 ### ✅ **Smart Label Detection**
 - 20+ tipe perubahan yang dapat dideteksi
@@ -265,7 +267,14 @@ src/styles/login.css
 ---
 *This issue was automatically created by GitHub Actions on push to main branch.*
 
-**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)
+## ⏱️ Auto Complete Countdown
+
+**Status:** 🔄 Processing...
+**Time Remaining:** 5 seconds
+**Progress:** ██████████ 100%
+
+> ⚡ This issue will automatically complete in **5 seconds**
+> 📊 Change Types Detected: **bugfix, frontend**
 ```
 
 ### Issue Body (After Auto Complete - Closed Status)
@@ -310,7 +319,14 @@ src/styles/login.css
 ---
 *This issue was automatically created by GitHub Actions on push to main branch.*
 
+## ✅ Auto Complete Finished
+
 **Status:** ✅ Complete
+**Completion Time:** 8/22/2025, 6:47:54 PM
+**Progress:** ██████████ 100% ✅
+
+> 🎉 This issue has been automatically completed!
+> 📊 Change Types Detected: **bugfix, frontend**
 ```
 
 ### Labels Applied
@@ -322,12 +338,26 @@ bug, auto-generated, update, push
 
 ### **Step 1: Issue Creation (Open)**
 ```markdown
-**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)
+## ⏱️ Auto Complete Countdown
+
+**Status:** 🔄 Processing...
+**Time Remaining:** 5 seconds
+**Progress:** ██████████ 100%
+
+> ⚡ This issue will automatically complete in **5 seconds**
+> 📊 Change Types Detected: **bugfix, frontend**
 ```
 
 ### **Step 2: Auto Complete (After 5 seconds)**
 ```markdown
+## ✅ Auto Complete Finished
+
 **Status:** ✅ Complete
+**Completion Time:** 8/22/2025, 6:47:54 PM
+**Progress:** ██████████ 100% ✅
+
+> 🎉 This issue has been automatically completed!
+> 📊 Change Types Detected: **bugfix, frontend**
 ```
 
 ### **Complete Comment**
