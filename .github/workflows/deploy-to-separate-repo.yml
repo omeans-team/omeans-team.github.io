@@ -52,16 +52,24 @@ jobs:
           echo "📊 Build output contents:"
           ls -la out/
       
+      - name: Setup SSH
+        run: |
+          echo "🔑 Setting up SSH for deployment..."
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+      
       - name: Deploy to separate live repository
         run: |
           echo "🚀 Deploying to live repository..."
           
-          # Configure git to use token
+          # Configure git to use SSH
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Clone the live repository with token
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git live-repo
+          # Clone the live repository using SSH
+          git clone git@github.com:omeans-team/omeans-team-live.git live-repo
           cd live-repo
           
           # Switch to main branch
@@ -82,8 +90,8 @@ jobs:
           # Commit
           git commit -m "Deploy static files from main repository - $(date)" || echo "No changes to commit"
           
-          # Push to live repository using token
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git main --force
+          # Push to live repository using SSH
+          git push origin main --force
           
           echo "✅ Deployment completed"
       
