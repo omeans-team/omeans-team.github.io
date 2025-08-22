@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Script untuk setup branch live dari branch main
+# Script untuk setup branch live dari branch main (Clean Version)
 # Branch live akan berisi static files yang aman untuk publikasi
 
-echo "🚀 Setting up live branch for public deployment..."
+echo "🚀 Setting up live branch for public deployment (Clean Version)..."
 
 # Konfigurasi
 MAIN_BRANCH="main"
@@ -45,27 +45,41 @@ if ! npm run build; then
     exit 1
 fi
 
+# Verifikasi out directory
+if [ ! -d "out" ]; then
+    echo "❌ Build output directory 'out' not found"
+    echo "Please check your build configuration"
+    exit 1
+fi
+
 # Membuat live branch dari static files
 echo "🌿 Creating live branch..."
 git checkout --orphan $LIVE_BRANCH
 
-# Menghapus semua file kecuali static files
+# Menghapus semua file
 echo "🧹 Cleaning up live branch..."
 git rm -rf .
 
-# Copy static files dari out directory (exclude node_modules)
-echo "📁 Copying static files..."
-cp -r out/* . 2>/dev/null || {
-    echo "❌ No static files found in 'out' directory"
-    echo "Please make sure your build process generates files in the 'out' directory"
+# Copy static files dari out directory dengan filter
+echo "📁 Copying static files (excluding node_modules)..."
+find out -type f -not -path "*/node_modules/*" -not -path "*/\.*" | while read file; do
+    # Get relative path from out directory
+    rel_path=${file#out/}
+    # Create directory if needed
+    dir=$(dirname "$rel_path")
+    if [ "$dir" != "." ]; then
+        mkdir -p "$dir"
+    fi
+    # Copy file
+    cp "$file" "$rel_path"
+done
+
+# Verify files were copied
+if [ ! -f "index.html" ] && [ ! -f "index.htm" ]; then
+    echo "❌ No index.html found in copied files"
+    echo "Please check your build output"
     git checkout $MAIN_BRANCH
     exit 1
-}
-
-# Remove node_modules if accidentally copied
-if [ -d "node_modules" ]; then
-    echo "🧹 Removing node_modules from live branch..."
-    rm -rf node_modules
 fi
 
 # Menambahkan .nojekyll untuk GitHub Pages
