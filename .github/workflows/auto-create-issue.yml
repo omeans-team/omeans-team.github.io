@@ -1,4 +1,4 @@
-name: Smart Auto Create and Close Issues on Push
+name: Smart Auto Create Issues on Push
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  smart-manage-issues:
+  create-issue:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,13 +21,13 @@ jobs:
         with:
           fetch-depth: 0
         
-      - name: Smart Issue Management
+      - name: Create Issue
         uses: actions/github-script@v7
-        id: issue-management
+        id: create-issue
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log('Starting Smart Issue Management...');
+            console.log('Starting Issue Creation...');
             
             // Get the GitHub username of the person who pushed
             const assignee = context.payload.sender.login;
@@ -74,83 +74,13 @@ jobs:
               console.log('Issue created successfully: #' + issue.data.number);
               console.log('Auto-assigned to:', assignee);
               
-              // Save issue number for next step
+              // Save issue number for auto-complete workflow
               core.setOutput('issue-number', issue.data.number);
               core.setOutput('issue-body', issueBody);
+              core.setOutput('assignee', assignee);
               
-              console.log('Issue number saved for auto-complete step:', issue.data.number);
+              console.log('Issue number saved for auto-complete workflow:', issue.data.number);
               
             } catch (error) {
               console.error('Failed to create issue:', error.message);
-            }
-      
-      - name: Auto Complete Issue
-        if: always() && steps.issue-management.outputs.issue-number != '' && steps.issue-management.outputs.issue-number != 'null'
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            console.log('Starting auto-complete process...');
-            
-            const issueNumber = '${{ steps.issue-management.outputs.issue-number }}';
-            
-            if (!issueNumber || issueNumber === '' || issueNumber === 'null') {
-              console.log('No valid issue number found, skipping auto-complete');
-              return;
-            }
-            
-            console.log('Auto-completing issue #' + issueNumber);
-            
-            // Wait for 10 seconds
-            console.log('Waiting 10 seconds before auto-completing...');
-            await new Promise(resolve => setTimeout(resolve, 10000));
-            
-            try {
-              console.log('Auto-completing issue #' + issueNumber + ' after 10 seconds...');
-              
-              // Update issue body to complete status
-              const completeBody = '## Auto Complete Finished\n\n' +
-                '**Status:** Complete\n' +
-                '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
-                '**Progress:** 100% Complete\n\n' +
-                '> This issue has been automatically completed!\n' +
-                '> Auto-complete process finished successfully\n\n' +
-                '---\n' +
-                '*This issue was automatically completed by GitHub Actions.*';
-              
-              console.log('Updating issue body to complete status...');
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: parseInt(issueNumber),
-                body: completeBody,
-                state: 'closed'
-              });
-              
-              console.log('Issue #' + issueNumber + ' status updated to closed');
-              
-              // Add completion comment
-              const completeComment = '## Issue Auto Complete\n\n' +
-                'This issue has been automatically completed.\n\n' +
-                '**Status:** Auto Complete\n' +
-                '**Triggered by:** Push to `' + context.ref.replace('refs/heads/', '') + '` branch\n' +
-                '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
-                '**Author:** ' + context.payload.head_commit.author.name + '\n' +
-                '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
-                '**Reason:** Changes have been successfully processed and deployed.\n\n' +
-                '---\n' +
-                '*This comment was automatically added by GitHub Actions.*';
-              
-              console.log('Adding completion comment...');
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: parseInt(issueNumber),
-                body: completeComment
-              });
-              
-              console.log('Issue #' + issueNumber + ' auto-completed successfully');
-              console.log('Auto-complete process finished for issue #' + issueNumber);
-            } catch (error) {
-              console.error('Failed to auto-complete issue #' + issueNumber + ':', error.message);
             }
