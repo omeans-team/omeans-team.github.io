@@ -35,12 +35,25 @@ jobs:
                 'config': /\.(json|yaml|yml|toml|ini|conf|config)$/i,
                 'docs': /\.(md|txt|rst|adoc)$/i,
                 'assets': /\.(png|jpg|jpeg|gif|svg|ico|mp4|mp3|pdf)$/i,
-                'security': /(security|auth|password|token|key|secret)/i,
-                'performance': /(performance|optimization|cache|speed)/i,
-                'bugfix': /(fix|bug|error|issue|problem)/i,
-                'feature': /(feature|add|new|implement)/i,
-                'refactor': /(refactor|cleanup|restructure)/i,
-                'test': /(test|spec|unit|integration)/i
+                'security': /(security|auth|password|token|key|secret|vulnerability|encrypt)/i,
+                'performance': /(performance|optimization|cache|speed|fast|slow|memory|cpu)/i,
+                'bugfix': /(fix|bug|error|issue|problem|crash|fail|broken|resolve)/i,
+                'feature': /(feature|add|new|implement|create|introduce|enable)/i,
+                'improve': /(improve|enhance|better|upgrade|update|modernize|polish)/i,
+                'refactor': /(refactor|cleanup|restructure|reorganize|simplify|optimize)/i,
+                'test': /(test|spec|unit|integration|e2e|cypress|jest|mocha)/i,
+                'conflict': /(conflict|merge|resolve|rebase|merge-conflict)/i,
+                'cherry-pick': /(cherry-pick|cherrypick|backport|port)/i,
+                'hotfix': /(hotfix|urgent|critical|emergency|patch)/i,
+                'breaking': /(breaking|major|incompatible|deprecate|remove)/i,
+                'dependency': /(dependency|package|npm|yarn|pip|maven|gradle)/i,
+                'ci-cd': /(ci|cd|pipeline|workflow|deploy|build|release)/i,
+                'accessibility': /(accessibility|a11y|aria|screen-reader|wcag)/i,
+                'mobile': /(mobile|responsive|touch|swipe|gesture)/i,
+                'api': /(api|endpoint|rest|graphql|swagger|openapi)/i,
+                'ui-ux': /(ui|ux|design|interface|user|experience|layout)/i,
+                'data': /(data|analytics|metrics|logging|monitoring)/i,
+                'devops': /(devops|infrastructure|docker|kubernetes|aws|azure)/i
               };
               
               const detectedTypes = new Set();
@@ -78,8 +91,21 @@ jobs:
                 'performance': 'performance',
                 'bugfix': 'bug',
                 'feature': 'enhancement',
+                'improve': 'improvement',
                 'refactor': 'refactor',
-                'test': 'testing'
+                'test': 'testing',
+                'conflict': 'merge-conflict',
+                'cherry-pick': 'cherry-pick',
+                'hotfix': 'hotfix',
+                'breaking': 'breaking-change',
+                'dependency': 'dependencies',
+                'ci-cd': 'ci-cd',
+                'accessibility': 'accessibility',
+                'mobile': 'mobile',
+                'api': 'api',
+                'ui-ux': 'ui-ux',
+                'data': 'data',
+                'devops': 'devops'
               };
               
               const labels = ['auto-generated', 'update', 'push'];
@@ -103,6 +129,7 @@ jobs:
               if (changeTypes.includes('performance')) topics.push('⚡ Performance optimizations');
               if (changeTypes.includes('bugfix')) topics.push('🐛 Bug fixes');
               if (changeTypes.includes('feature')) topics.push('✨ New features');
+              if (changeTypes.includes('improve')) topics.push('🚀 Improvements');
               if (changeTypes.includes('refactor')) topics.push('🔧 Code refactoring');
               if (changeTypes.includes('test')) topics.push('🧪 Testing improvements');
               if (changeTypes.includes('docs')) topics.push('📚 Documentation updates');
@@ -110,6 +137,18 @@ jobs:
               if (changeTypes.includes('backend')) topics.push('⚙️ Backend changes');
               if (changeTypes.includes('database')) topics.push('🗄️ Database changes');
               if (changeTypes.includes('config')) topics.push('⚙️ Configuration updates');
+              if (changeTypes.includes('conflict')) topics.push('🔀 Merge conflict resolution');
+              if (changeTypes.includes('cherry-pick')) topics.push('🍒 Cherry-pick changes');
+              if (changeTypes.includes('hotfix')) topics.push('🚨 Hotfix/urgent fix');
+              if (changeTypes.includes('breaking')) topics.push('💥 Breaking changes');
+              if (changeTypes.includes('dependency')) topics.push('📦 Dependency updates');
+              if (changeTypes.includes('ci-cd')) topics.push('🔄 CI/CD pipeline changes');
+              if (changeTypes.includes('accessibility')) topics.push('♿ Accessibility improvements');
+              if (changeTypes.includes('mobile')) topics.push('📱 Mobile/responsive changes');
+              if (changeTypes.includes('api')) topics.push('🔌 API changes');
+              if (changeTypes.includes('ui-ux')) topics.push('🎯 UI/UX improvements');
+              if (changeTypes.includes('data')) topics.push('📊 Data/analytics changes');
+              if (changeTypes.includes('devops')) topics.push('🛠️ DevOps/infrastructure changes');
               
               if (topics.length > 0) {
                 comment += '### 🎯 Main Topics\n';
@@ -151,6 +190,30 @@ jobs:
               if (changeTypes.includes('frontend')) {
                 recommendations.push('🎨 Test UI/UX changes');
                 recommendations.push('📱 Verify responsive design');
+              }
+              if (changeTypes.includes('breaking')) {
+                recommendations.push('⚠️ Review breaking changes impact');
+                recommendations.push('📋 Update documentation');
+              }
+              if (changeTypes.includes('hotfix')) {
+                recommendations.push('🚨 Test thoroughly before deployment');
+                recommendations.push('📞 Notify stakeholders');
+              }
+              if (changeTypes.includes('dependency')) {
+                recommendations.push('🔍 Review dependency changes');
+                recommendations.push('🧪 Test compatibility');
+              }
+              if (changeTypes.includes('ci-cd')) {
+                recommendations.push('🔄 Test pipeline changes');
+                recommendations.push('📊 Monitor deployment success');
+              }
+              if (changeTypes.includes('accessibility')) {
+                recommendations.push('♿ Test with screen readers');
+                recommendations.push('🎯 Verify WCAG compliance');
+              }
+              if (changeTypes.includes('api')) {
+                recommendations.push('🔌 Test API endpoints');
+                recommendations.push('📋 Update API documentation');
               }
               
               if (recommendations.length > 0) {
