@@ -8,12 +8,18 @@ Our live site is deployed at: https://omeans-team.github.io/omeans-team-live/
 
 ## 📁 Repository Structure
 
-- **Main Repository** (Private): `omeans-team/omeans-team.github.io` - Source code
-- **Live Repository** (Public): `omeans-team/omeans-team-live` - Static files for GitHub Pages
+- **Main Repository** (Private): `omeans-team/omeans-team.github.io` - Source code (main branch only)
+- **Live Repository** (Public): `omeans-team/omeans-team-live` - Static files for GitHub Pages (main branch)
 
 ## 🔄 Deployment
 
 This repository uses GitHub Actions to automatically deploy static files to the live repository whenever changes are pushed to the main branch.
+
+**Workflow:**
+1. Push to `main` branch in private repository
+2. GitHub Actions builds static files
+3. Auto-deploy to public live repository
+4. GitHub Pages serves the live site
 
 ## 🛠️ Development
 
