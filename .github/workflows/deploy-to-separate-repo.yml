@@ -6,8 +6,8 @@ on:
       - main
     paths-ignore:
       - '**.md'
-      - '.github/**'
       - 'docs/**'
+      - 'README.md'
 
 jobs:
   build-and-deploy:
