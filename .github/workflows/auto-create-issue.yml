@@ -1,0 +1,73 @@
+name: Auto Create Issue on Push
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+
+jobs:
+  create-issue:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Create Issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.payload.after
+            });
+            
+            const changedFiles = commits.files.map(file => file.filename).join(', ');
+            const additions = commits.files.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = commits.files.reduce((sum, file) => sum + file.deletions, 0);
+            
+            const issueTitle = '🔄 Update: ' + context.payload.head_commit.message.split('\n')[0];
+            
+            const issueBody = '## 📝 Update Summary\n\n' +
+              '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
+              '**Author:** ' + context.payload.head_commit.author.name + '\n' +
+              '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
+              '### 📋 Changes Made\n' +
+              context.payload.head_commit.message + '\n\n' +
+              '### 📁 Files Modified\n' +
+              '```\n' +
+              changedFiles + '\n' +
+              '```\n\n' +
+              '### 📊 Statistics\n' +
+              '- **Additions:** +' + additions + ' lines\n' +
+              '- **Deletions:** -' + deletions + ' lines\n' +
+              '- **Total Changes:** ' + (additions + deletions) + ' lines\n\n' +
+              '### 🔗 Related Links\n' +
+              '- **Commit:** [' + context.payload.head_commit.id.substring(0, 7) + '](' + context.payload.head_commit.url + ')\n' +
+              '- **Branch:** `' + context.ref.replace('refs/heads/', '') + '`\n' +
+              '- **Repository:** [' + context.repo.owner + '/' + context.repo.repo + '](' + context.payload.repository.html_url + ')\n\n' +
+              '---\n' +
+              '*This issue was automatically created by GitHub Actions on push to ' + context.ref.replace('refs/heads/', '') + ' branch.*';
+
+            try {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: issueTitle,
+                body: issueBody,
+                labels: ['auto-generated', 'update', 'push']
+              });
+              
+              console.log('✅ Issue created successfully: #' + issue.data.number);
+            } catch (error) {
+              console.error('❌ Failed to create issue:', error.message);
+            }

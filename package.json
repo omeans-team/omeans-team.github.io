@@ -32,7 +32,15 @@
     "export": "next build",
     "deploy": "npm run export && touch out/.nojekyll && echo 'Deployment ready! Upload the contents of the out/ folder to GitHub Pages.'",
     "setup-github": "bash scripts/setup-github.sh",
-    "setup-github-win": "scripts\\setup-github.bat"
+    "setup-github-win": "scripts\\setup-github.bat",
+    "setup-auto-issue": "bash scripts/setup-git-hooks.sh",
+    "setup-auto-issue-win": "scripts\\setup-git-hooks.bat",
+    "create-issue": "bash scripts/create-issue-on-push.sh",
+    "create-issue-win": "scripts\\create-issue-on-push.bat",
+    "test-issue": "bash scripts/test-issue-creation.sh",
+    "test-issue-win": "scripts\\test-issue-creation.bat",
+    "setup-env": "bash scripts/setup-env.sh",
+    "setup-env-win": "scripts\\setup-env.bat"
   },
   "dependencies": {
     "@primer/octicons-react": "^19.15.5",
