@@ -37,3 +37,8 @@ next-env.d.ts
 
 # live repository directory
 live-repo/
+
+# SSH keys
+deploy_key*
+*.pem
+*.key
