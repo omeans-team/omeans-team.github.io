@@ -361,83 +361,6 @@ jobs:
               
               console.log('📤 Issue number saved for auto-complete step:', issue.data.number);
               
-              // Auto close issue setelah 10 detik untuk menandai sebagai complete
-              console.log('⏱️ Starting 10-second countdown timer for issue #' + issue.data.number);
-              
-              // Gunakan Promise dengan timeout yang lebih reliable
-              const autoCompletePromise = new Promise((resolve, reject) => {
-                setTimeout(async () => {
-                  try {
-                    console.log('🔄 Auto-completing issue #' + issue.data.number + ' after 10 seconds...');
-                    
-                    // Update issue body dengan status complete
-                    const completeBody = issueBody.replace(
-                      '## ⏱️ Auto Complete Countdown\n\n' +
-                      '**Status:** 🔄 Processing...\n' +
-                      '**Time Remaining:** 10 seconds\n' +
-                      '**Progress:** ██████████ 100%\n\n' +
-                      '> ⚡ This issue will automatically complete in **10 seconds**\n' +
-                      '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
-                      '## ✅ Auto Complete Finished\n\n' +
-                      '**Status:** ✅ Complete\n' +
-                      '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
-                      '**Progress:** ██████████ 100% ✅\n\n' +
-                      '> 🎉 This issue has been automatically completed!\n' +
-                      '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
-                    );
-                    
-                    console.log('📝 Updating issue body to complete status...');
-                    await github.rest.issues.update({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number: issue.data.number,
-                      body: completeBody,
-                      state: 'closed'
-                    });
-                    
-                    console.log('✅ Issue #' + issue.data.number + ' status updated to closed');
-                    
-                    // Tambahkan komentar penutupan
-                    const completeComment = '## ✅ Issue Auto Complete\n\n' +
-                      'This issue has been automatically completed.\n\n' +
-                      '**Status:** Auto Complete ✅\n' +
-                      '**Triggered by:** Push to `' + context.ref.replace('refs/heads/', '') + '` branch\n' +
-                      '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
-                      '**Author:** ' + context.payload.head_commit.author.name + '\n' +
-                      '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
-                      '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
-                      '**Reason:** Changes have been successfully processed and deployed.\n\n' +
-                      '---\n' +
-                      '*This comment was automatically added by GitHub Actions.*';
-                    
-                    console.log('💬 Adding completion comment...');
-                    await github.rest.issues.createComment({
-                      owner: context.repo.owner,
-                      repo: context.repo.repo,
-                      issue_number: issue.data.number,
-                      body: completeComment
-                    });
-                    
-                    console.log('✅ Issue #' + issue.data.number + ' auto-completed successfully');
-                    console.log('🎉 Auto-complete process finished for issue #' + issue.data.number);
-                    resolve('success');
-                  } catch (error) {
-                    console.error('❌ Failed to auto-complete issue #' + issue.data.number + ':', error.message);
-                    console.error('Error details:', JSON.stringify(error, null, 2));
-                    reject(error);
-                  }
-                }, 10000); // 10 detik delay
-              });
-              
-              // Handle the promise
-              autoCompletePromise
-                .then(() => {
-                  console.log('🎯 Auto-complete promise resolved successfully');
-                })
-                .catch((error) => {
-                  console.error('💥 Auto-complete promise rejected:', error.message);
-                });
-              
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
               console.error('Error details:', JSON.stringify(error, null, 2));
@@ -467,8 +390,12 @@ jobs:
           script: |
             console.log('🔍 Checking if auto-complete step should run...');
             console.log('Issue number output:', '${{ steps.issue-management.outputs.issue-number }}');
+            console.log('Issue body output length:', '${{ steps.issue-management.outputs.issue-body }}'.length);
+            console.log('Change types output:', '${{ steps.issue-management.outputs.change-types }}');
             
             const issueNumber = '${{ steps.issue-management.outputs.issue-number }}';
+            const issueBody = '${{ steps.issue-management.outputs.issue-body }}';
+            const changeTypes = '${{ steps.issue-management.outputs.change-types }}'.split(',');
             
             if (!issueNumber || issueNumber === '' || issueNumber === 'null') {
               console.log('❌ No valid issue number found, skipping auto-complete');
@@ -476,6 +403,8 @@ jobs:
             }
             
             console.log('⏱️ Starting auto-complete process for issue #' + issueNumber);
+            console.log('📝 Original issue body length:', issueBody.length);
+            console.log('🏷️ Change types:', changeTypes);
             
             // Wait for 10 seconds
             console.log('⏳ Waiting 10 seconds before auto-completing...');
@@ -485,14 +414,20 @@ jobs:
               console.log('🔄 Auto-completing issue #' + issueNumber + ' after 10 seconds...');
               
               // Update issue body dengan status complete
-              const completeBody = '## ✅ Auto Complete Finished\n\n' +
+              const completeBody = issueBody.replace(
+                '## ⏱️ Auto Complete Countdown\n\n' +
+                '**Status:** 🔄 Processing...\n' +
+                '**Time Remaining:** 10 seconds\n' +
+                '**Progress:** ██████████ 100%\n\n' +
+                '> ⚡ This issue will automatically complete in **10 seconds**\n' +
+                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**',
+                '## ✅ Auto Complete Finished\n\n' +
                 '**Status:** ✅ Complete\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n' +
                 '**Progress:** ██████████ 100% ✅\n\n' +
                 '> 🎉 This issue has been automatically completed!\n' +
-                '> 📊 Auto-complete process finished successfully\n\n' +
-                '---\n' +
-                '*This issue was automatically completed by GitHub Actions.*';
+                '> 📊 Change Types Detected: **' + (changeTypes.join(', ') || 'General update') + '**'
+              );
               
               console.log('📝 Updating issue body to complete status...');
               await github.rest.issues.update({
@@ -513,6 +448,7 @@ jobs:
                 '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
                 '**Author:** ' + context.payload.head_commit.author.name + '\n' +
                 '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
+                '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
                 '**Reason:** Changes have been successfully processed and deployed.\n\n' +
                 '---\n' +
                 '*This comment was automatically added by GitHub Actions.*';
