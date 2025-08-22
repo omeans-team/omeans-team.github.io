@@ -60,8 +60,8 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Clone the live repository
-          git clone https://github.com/omeans-team/omeans-team-live.git live-repo
+          # Clone the live repository with token
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git live-repo
           cd live-repo
           
           # Switch to main branch
@@ -82,9 +82,8 @@ jobs:
           # Commit
           git commit -m "Deploy static files from main repository - $(date)" || echo "No changes to commit"
           
-          # Push to live repository using token in URL
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git
-          git push origin main --force
+          # Push to live repository using token
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/omeans-team/omeans-team-live.git main --force
           
           echo "✅ Deployment completed"
       
