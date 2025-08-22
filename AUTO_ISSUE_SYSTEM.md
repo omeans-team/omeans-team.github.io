@@ -11,11 +11,18 @@ Sistem ini secara otomatis membuat dan menutup issue berdasarkan push ke reposit
 - Smart detection tipe perubahan
 - Auto-assign ke user yang push
 - Label otomatis berdasarkan tipe perubahan
+- **Status: Open → Auto Complete** (5 detik delay)
 
 ### ✅ **Auto Close Issues**
 - Menutup issue auto-generated yang sudah ada
 - Menambahkan komentar penutupan dengan status
 - Menandai sebagai "Auto Close Complete"
+
+### ✅ **Auto Complete Process**
+- Issue dibuat dengan status "🔄 Processing..."
+- Setelah 5 detik otomatis berubah menjadi "✅ Complete"
+- Status issue berubah dari "open" ke "closed"
+- Menambahkan komentar "Issue Auto Complete"
 
 ### ✅ **Smart Label Detection**
 - 20+ tipe perubahan yang dapat dideteksi
@@ -216,7 +223,7 @@ git commit -m "cherry-pick: add new API endpoint for user data"
 🔄 Update: fix critical bug in login system
 ```
 
-### Issue Body
+### Issue Body (Initial - Open Status)
 ```markdown
 ## 📝 Update Summary
 
@@ -257,6 +264,53 @@ src/styles/login.css
 
 ---
 *This issue was automatically created by GitHub Actions on push to main branch.*
+
+**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)
+```
+
+### Issue Body (After Auto Complete - Closed Status)
+```markdown
+## 📝 Update Summary
+
+### 🎯 Main Topics
+- 🐛 Bug fixes
+
+### 📁 File Type Analysis
+- **TS**: 2 file(s)
+- **CSS**: 1 file(s)
+
+### 💡 Recommendations
+- 🔍 Consider security testing
+- 📋 Review access controls
+
+**Commit:** `a1b2c3d`
+**Author:** John Doe
+**Date:** 8/22/2025, 6:47:49 PM
+
+### 📋 Changes Made
+fix critical bug in login system
+
+### 📁 Files Modified
+```
+src/components/Login.tsx
+src/styles/login.css
+```
+
+### 📊 Statistics
+- **Additions:** +15 lines
+- **Deletions:** -5 lines
+- **Total Changes:** 20 lines
+- **Files Changed:** 2 files
+
+### 🔗 Related Links
+- **Commit:** [a1b2c3d](https://github.com/user/repo/commit/a1b2c3d)
+- **Branch:** `main`
+- **Repository:** [user/repo](https://github.com/user/repo)
+
+---
+*This issue was automatically created by GitHub Actions on push to main branch.*
+
+**Status:** ✅ Complete
 ```
 
 ### Labels Applied
@@ -264,7 +318,39 @@ src/styles/login.css
 bug, auto-generated, update, push
 ```
 
-## 🔄 Auto Close Process
+## 🔄 Auto Complete Process
+
+### **Step 1: Issue Creation (Open)**
+```markdown
+**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)
+```
+
+### **Step 2: Auto Complete (After 5 seconds)**
+```markdown
+**Status:** ✅ Complete
+```
+
+### **Complete Comment**
+```markdown
+## ✅ Issue Auto Complete
+
+This issue has been automatically completed.
+
+**Status:** Auto Complete ✅
+**Triggered by:** Push to `main` branch
+**Commit:** `a1b2c3d`
+**Author:** John Doe
+**Completion Time:** 8/22/2025, 6:47:54 PM
+
+**Change Types Detected:** bugfix, frontend
+
+**Reason:** Changes have been successfully processed and deployed.
+
+---
+*This comment was automatically added by GitHub Actions.*
+```
+
+## 🔄 Auto Close Process (For Existing Issues)
 
 ### Close Comment
 ```markdown

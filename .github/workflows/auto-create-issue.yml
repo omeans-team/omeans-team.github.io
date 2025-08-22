@@ -323,7 +323,8 @@ jobs:
               '- **Branch:** `' + context.ref.replace('refs/heads/', '') + '`\n' +
               '- **Repository:** [' + context.repo.owner + '/' + context.repo.repo + '](' + context.payload.repository.html_url + ')\n\n' +
               '---\n' +
-              '*This issue was automatically created by GitHub Actions on push to ' + context.ref.replace('refs/heads/', '') + ' branch.*';
+              '*This issue was automatically created by GitHub Actions on push to ' + context.ref.replace('refs/heads/', '') + ' branch.*\n\n' +
+              '**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)';
 
             try {
               const issue = await github.rest.issues.create({
@@ -338,6 +339,50 @@ jobs:
               console.log('✅ Issue created successfully: #' + issue.data.number);
               console.log('👤 Auto-assigned to:', context.payload.head_commit.author.name);
               console.log('🏷️ Labels applied:', labels);
+              
+              // Auto close issue setelah 5 detik untuk menandai sebagai complete
+              setTimeout(async () => {
+                try {
+                  // Update issue body dengan status complete
+                  const completeBody = issueBody.replace(
+                    '**Status:** 🔄 Processing... (Will auto-complete in 5 seconds)',
+                    '**Status:** ✅ Complete'
+                  );
+                  
+                  await github.rest.issues.update({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    body: completeBody,
+                    state: 'closed'
+                  });
+                  
+                  // Tambahkan komentar penutupan
+                  const completeComment = '## ✅ Issue Auto Complete\n\n' +
+                    'This issue has been automatically completed.\n\n' +
+                    '**Status:** Auto Complete ✅\n' +
+                    '**Triggered by:** Push to `' + context.ref.replace('refs/heads/', '') + '` branch\n' +
+                    '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
+                    '**Author:** ' + context.payload.head_commit.author.name + '\n' +
+                    '**Completion Time:** ' + new Date().toLocaleString() + '\n\n' +
+                    '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
+                    '**Reason:** Changes have been successfully processed and deployed.\n\n' +
+                    '---\n' +
+                    '*This comment was automatically added by GitHub Actions.*';
+                  
+                  await github.rest.issues.createComment({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    issue_number: issue.data.number,
+                    body: completeComment
+                  });
+                  
+                  console.log('✅ Issue #' + issue.data.number + ' auto-completed successfully');
+                } catch (error) {
+                  console.error('❌ Failed to auto-complete issue #' + issue.data.number + ':', error.message);
+                }
+              }, 5000); // 5 detik delay
+              
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
             }
