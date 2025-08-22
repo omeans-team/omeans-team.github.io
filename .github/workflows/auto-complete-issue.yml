@@ -50,24 +50,6 @@ jobs:
             
             console.log('Found create-issue job:', createJob.id);
             
-            // Get the steps from the job
-            const steps = await github.rest.actions.listJobStepsForWorkflowRun({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              job_id: createJob.id
-            });
-            
-            console.log('Found steps:', steps.data.steps.length);
-            
-            // Find the create-issue step
-            const createStep = steps.data.steps.find(step => step.name === 'Create Issue');
-            if (!createStep) {
-              console.log('Create Issue step not found');
-              return;
-            }
-            
-            console.log('Found Create Issue step:', createStep.id);
-            
             // Get the logs to extract issue number
             const logs = await github.rest.actions.downloadJobLogsForWorkflowRun({
               owner: context.repo.owner,
