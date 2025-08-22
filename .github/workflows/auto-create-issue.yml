@@ -460,7 +460,7 @@ jobs:
             }
       
       - name: Auto Complete Issue
-        if: steps.issue-management.outputs.issue-number != ''
+        if: steps.issue-management.outputs.issue-number != '' && steps.issue-management.outputs.issue-number != 'null'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -469,9 +469,12 @@ jobs:
             const issueBody = ${{ steps.issue-management.outputs.issue-body }};
             const changeTypes = '${{ steps.issue-management.outputs.change-types }}'.split(',');
             
-            console.log('⏱️ Waiting 10 seconds before auto-completing issue #' + issueNumber);
+            console.log('⏱️ Starting auto-complete process for issue #' + issueNumber);
+            console.log('📝 Issue body length:', issueBody.length);
+            console.log('🏷️ Change types:', changeTypes);
             
             // Wait for 10 seconds
+            console.log('⏳ Waiting 10 seconds before auto-completing...');
             await new Promise(resolve => setTimeout(resolve, 10000));
             
             try {
