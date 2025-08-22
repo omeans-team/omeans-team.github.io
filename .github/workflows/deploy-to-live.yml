@@ -1,0 +1,101 @@
+name: Deploy to Live Branch
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+      - 'docs/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build static files
+        run: npm run build
+      
+      - name: Deploy to live branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./out
+          destination_dir: .
+          publish_branch: live
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: 'Deploy static files from main branch'
+      
+      - name: Create deployment summary
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: commits } = await github.rest.repos.compareCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              base: context.payload.before,
+              head: context.payload.after
+            });
+            
+            const changedFiles = commits.files || [];
+            const additions = changedFiles.reduce((sum, file) => sum + file.additions, 0);
+            const deletions = changedFiles.reduce((sum, file) => sum + file.deletions, 0);
+            
+            const summary = `## 🚀 Live Branch Deployment Summary
+            
+            **Branch:** \`live\` (public static files)
+            **Source:** \`main\` (private development)
+            **Commit:** \`${context.payload.head_commit.id.substring(0, 7)}\`
+            **Author:** ${context.payload.head_commit.author.name}
+            **Date:** ${new Date(context.payload.head_commit.timestamp).toLocaleString()}
+            
+            ### 📊 Build Statistics
+            - **Files Changed:** ${changedFiles.length} files
+            - **Additions:** +${additions} lines
+            - **Deletions:** -${deletions} lines
+            - **Total Changes:** ${additions + deletions} lines
+            
+            ### 🔗 Links
+            - **Live Site:** https://${context.repo.owner}.github.io/${context.repo.repo}/
+            - **Source Code:** https://github.com/${context.repo.owner}/${context.repo.repo}/tree/main
+            - **Live Branch:** https://github.com/${context.repo.owner}/${context.repo.repo}/tree/live
+            
+            ### 📝 Changes Made
+            \`\`\`
+            ${context.payload.head_commit.message}
+            \`\`\`
+            
+            ---
+            *This deployment was automatically generated from the main branch.*`;
+            
+            try {
+              const issue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚀 Live Branch Deployed: ' + context.payload.head_commit.message.split('\n')[0],
+                body: summary,
+                labels: ['deployment', 'live-branch', 'auto-generated']
+              });
+              
+              console.log('✅ Deployment summary issue created: #' + issue.data.number);
+            } catch (error) {
+              console.error('❌ Failed to create deployment summary:', error.message);
+            }
