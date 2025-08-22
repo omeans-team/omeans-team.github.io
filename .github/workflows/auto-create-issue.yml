@@ -121,10 +121,23 @@ jobs:
               return labels;
             }
             
-            // Mendapatkan file yang berubah
-            const changedFiles = context.payload.commits.flatMap(commit => 
-              commit.added.concat(commit.modified).concat(commit.removed)
-            ).map(filename => ({ filename }));
+            // Mendapatkan file yang berubah dengan validasi
+            let changedFiles = [];
+            
+            if (context.payload.commits && Array.isArray(context.payload.commits)) {
+              changedFiles = context.payload.commits.flatMap(commit => {
+                const added = commit.added || [];
+                const modified = commit.modified || [];
+                const removed = commit.removed || [];
+                return added.concat(modified).concat(removed);
+              }).map(filename => ({ filename }));
+            } else {
+              console.log('No commits data available, using fallback');
+              // Fallback: gunakan data dari head_commit jika ada
+              if (context.payload.head_commit) {
+                changedFiles = [{ filename: 'unknown' }];
+              }
+            }
             
             // Deteksi tipe perubahan
             const changeTypes = detectChangeType(changedFiles);
@@ -270,12 +283,12 @@ jobs:
               changedFiles.map(f => f.filename).join('\n') + '\n' +
               '```\n\n' +
               '### Statistics\n' +
-              '- **Additions:** +' + context.payload.head_commit.additions + ' lines\n' +
-              '- **Deletions:** -' + context.payload.head_commit.deletions + ' lines\n' +
-              '- **Total Changes:** ' + (context.payload.head_commit.additions + context.payload.head_commit.deletions) + ' lines\n' +
+              '- **Additions:** +' + (context.payload.head_commit.additions || 0) + ' lines\n' +
+              '- **Deletions:** -' + (context.payload.head_commit.deletions || 0) + ' lines\n' +
+              '- **Total Changes:** ' + ((context.payload.head_commit.additions || 0) + (context.payload.head_commit.deletions || 0)) + ' lines\n' +
               '- **Files Changed:** ' + changedFiles.length + ' files\n\n' +
               '### Related Links\n' +
-              '- **Commit:** [' + context.payload.head_commit.id.substring(0, 7) + '](' + context.payload.head_commit.url + ')\n' +
+              '- **Commit:** [' + context.payload.head_commit.id.substring(0, 7) + '](' + (context.payload.head_commit.url || '#') + ')\n' +
               '- **Branch:** `' + context.ref.replace('refs/heads/', '') + '`\n' +
               '- **Repository:** [' + context.repo.owner + '/' + context.repo.repo + '](' + context.payload.repository.html_url + ')\n\n' +
               '---\n' +
