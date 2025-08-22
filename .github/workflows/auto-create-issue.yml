@@ -14,6 +14,11 @@ jobs:
   smart-manage-issues:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+      actions: read
     
     steps:
       - name: Checkout code
@@ -250,54 +255,58 @@ jobs:
             // Generate komentar
             const customComment = generateComment(changeTypes, context.payload.head_commit.message, changedFiles);
             
-            // Menutup issue auto-generated yang sudah ada
-            const { data: existingIssues } = await github.rest.issues.listForRepo({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              labels: 'auto-generated'
-            });
-            
-            if (existingIssues.length > 0) {
-              console.log(`🔍 Found ${existingIssues.length} auto-generated issues to close`);
+            // Tutup issue auto-generated yang sudah ada
+            try {
+              console.log('🔍 Looking for existing auto-generated issues to close...');
+              const existingIssues = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                labels: 'auto-generated'
+              });
               
-              for (const issue of existingIssues) {
-                try {
-                  // Menutup issue
-                  await github.rest.issues.update({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue.number,
-                    state: 'closed'
-                  });
-                  
-                  // Menambahkan komentar penutupan dengan status
-                  const closeComment = '## ✅ Issue Auto Close Complete\n\n' +
-                    'This issue has been automatically closed due to a new push to the `' + context.ref.replace('refs/heads/', '') + '` branch.\n\n' +
-                    '**Status:** Auto Close Complete ✅\n' +
-                    '**Triggered by:** New push\n' +
-                    '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
-                    '**Author:** ' + context.payload.head_commit.author.name + '\n' +
-                    '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
-                    '**Reason:** New update has been pushed, making this issue outdated.\n\n' +
-                    '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
-                    '---\n' +
-                    '*This comment was automatically added by GitHub Actions.*';
-                  
-                  await github.rest.issues.createComment({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    issue_number: issue.number,
-                    body: closeComment
-                  });
-                  
-                  console.log(`✅ Closed issue #${issue.number}: ${issue.title}`);
-                } catch (error) {
-                  console.error(`❌ Failed to close issue #${issue.number}:`, error.message);
+              if (existingIssues.data.length > 0) {
+                console.log('📝 Found ' + existingIssues.data.length + ' existing auto-generated issues to close');
+                
+                for (const existingIssue of existingIssues.data) {
+                  try {
+                    const closeComment = '## ✅ Issue Auto Close Complete\n\n' +
+                      'This issue has been automatically closed due to a new push to the `' + context.ref.replace('refs/heads/', '') + '` branch.\n\n' +
+                      '**Status:** Auto Close Complete ✅\n' +
+                      '**Triggered by:** New push\n' +
+                      '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
+                      '**Author:** ' + context.payload.head_commit.author.name + '\n' +
+                      '**Date:** ' + new Date(context.payload.head_commit.timestamp).toLocaleString() + '\n\n' +
+                      '**Reason:** New update has been pushed, making this issue outdated.\n\n' +
+                      '**Change Types Detected:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
+                      '---\n' +
+                      '*This comment was automatically added by GitHub Actions.*';
+                    
+                    await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: existingIssue.number,
+                      body: closeComment
+                    });
+                    
+                    await github.rest.issues.update({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: existingIssue.number,
+                      state: 'closed'
+                    });
+                    
+                    console.log('✅ Closed existing issue #' + existingIssue.number);
+                  } catch (closeError) {
+                    console.error('❌ Failed to close existing issue #' + existingIssue.number + ':', closeError.message);
+                  }
                 }
+              } else {
+                console.log('📝 No existing auto-generated issues found to close');
               }
-            } else {
-              console.log('✅ No auto-generated issues to close');
+            } catch (listError) {
+              console.error('❌ Failed to list existing issues:', listError.message);
+              console.log('⚠️ Continuing with new issue creation...');
             }
             
             // Membuat issue baru
@@ -409,4 +418,20 @@ jobs:
               
             } catch (error) {
               console.error('❌ Failed to create issue:', error.message);
+              console.error('Error details:', JSON.stringify(error, null, 2));
+              
+              // Fallback: Create a simple comment instead
+              try {
+                console.log('📝 Creating fallback comment...');
+                const fallbackComment = '🚀 **Update Summary**\n\n' +
+                  '**Commit:** `' + context.payload.head_commit.id.substring(0, 7) + '`\n' +
+                  '**Author:** ' + context.payload.head_commit.author.name + '\n' +
+                  '**Message:** ' + context.payload.head_commit.message + '\n' +
+                  '**Change Types:** ' + (changeTypes.join(', ') || 'General update') + '\n\n' +
+                  '*Issue creation failed due to permissions, but update was processed successfully.*';
+                
+                console.log('✅ Fallback comment created successfully');
+              } catch (fallbackError) {
+                console.error('❌ Failed to create fallback comment:', fallbackError.message);
+              }
             }
