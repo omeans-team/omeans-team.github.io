@@ -108,6 +108,23 @@
     }
   }, 0);
   
+  // Also suppress console methods that might be restored by other scripts
+  setInterval(() => {
+    console.warn = function() { return; };
+    console.error = function() { return; };
+    console.log = function() { return; };
+    console.info = function() { return; };
+    console.debug = function() { return; };
+    
+    if (typeof window !== 'undefined') {
+      window.console.warn = function() { return; };
+      window.console.error = function() { return; };
+      window.console.log = function() { return; };
+      window.console.info = function() { return; };
+      window.console.debug = function() { return; };
+    }
+  }, 10);
+  
   // Prevent third-party cookies from being set
   if (typeof document !== 'undefined') {
     // Override document.cookie setter
