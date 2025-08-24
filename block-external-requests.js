@@ -2,16 +2,18 @@
 (function() {
   'use strict';
   
-  // Block all external requests immediately
-  const blockedDomains = [
-    'github.com',
-    'api.github.com', 
-    'avatars.githubusercontent.com',
-    'googletagmanager.com',
-    'google-analytics.com',
-    'google.com',
-    'fonts.gstatic.com'
-  ];
+     // Block all external requests immediately
+   const blockedDomains = [
+     'github.com',
+     'api.github.com', 
+     'avatars.githubusercontent.com',
+     'googletagmanager.com',
+     'google-analytics.com',
+     'google.com',
+     'fonts.gstatic.com',
+     'www.googletagmanager.com',
+     'tagmanager.google.com'
+   ];
   
   // Override fetch before it's used
   if (typeof window !== 'undefined') {

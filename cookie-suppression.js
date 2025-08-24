@@ -28,8 +28,8 @@
       Object.defineProperty(document, 'cookie', {
         get: originalCookieDescriptor.get,
         set: function(value) {
-          // Block problematic cookies completely
-          const blockedCookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR'];
+                     // Block problematic cookies completely
+           const blockedCookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR', '__TAG_ASSISTANT'];
           const shouldBlock = blockedCookies.some(cookie => value.includes(cookie));
           if (shouldBlock) {
             return; // Don't set the cookie at all
