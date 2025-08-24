@@ -84,9 +84,11 @@
   
   // Also override window.console methods
   if (typeof window !== 'undefined') {
-    window.console.warn = console.warn;
-    window.console.error = console.error;
-    window.console.log = console.log;
+    window.console.warn = function() { return; };
+    window.console.error = function() { return; };
+    window.console.log = function() { return; };
+    window.console.info = function() { return; };
+    window.console.debug = function() { return; };
   }
   
   // Prevent third-party cookies from being set
