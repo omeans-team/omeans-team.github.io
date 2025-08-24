@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
   assetPrefix: '/omeans-team-live/',
   images: {
     unoptimized: true
-  },
-  // Disable static export temporarily to fix build issues
-  experimental: {
-    esmExternals: false
   }
 }
 
