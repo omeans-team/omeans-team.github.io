@@ -26,7 +26,7 @@ const contactInfo = [
     icon: 'DeviceMobileIcon',
     title: 'Phone',
     value: '+62 821-9927-5053',
-    link: 'tel:+6282199275053'
+    link: 'https://wa.me/6282199275053'
   },
   {
     icon: 'GlobeIcon',

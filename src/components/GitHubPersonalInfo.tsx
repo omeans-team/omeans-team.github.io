@@ -61,7 +61,14 @@ const GitHubPersonalInfo: React.FC<GitHubPersonalInfoProps> = ({ className = '' 
           </div>
           <div className="flex items-center">
             <span className="font-bold text-orange-omeans mr-2">Phone:</span>
-            <span className="text-gray-omeans">/ +62-812-3456-7890</span>
+            <a 
+              href="https://wa.me/6281234567890"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-omeans hover:text-orange-omeans transition-colors"
+            >
+              / +62-812-3456-7890
+            </a>
           </div>
           <div className="flex items-center">
             <span className="font-bold text-orange-omeans mr-2">Skype:</span>
@@ -168,6 +175,17 @@ const GitHubPersonalInfo: React.FC<GitHubPersonalInfoProps> = ({ className = '' 
             <span className="text-gray-omeans">
               / {profile.hireable ? 'For Hire' : 'Not Available'}
             </span>
+          </div>
+          <div className="flex items-center">
+            <span className="font-bold text-orange-omeans mr-2">Phone:</span>
+            <a 
+              href="https://wa.me/6281234567890"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-omeans hover:text-orange-omeans transition-colors"
+            >
+              / +62-812-3456-7890
+            </a>
           </div>
         </div>
       </div>
