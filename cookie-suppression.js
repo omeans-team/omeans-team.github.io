@@ -18,10 +18,15 @@
   function shouldSuppress(message) {
     if (typeof message !== 'string') return false;
     
-    // GitHub cookie warnings
-    if (message.includes('_gh_sess') || message.includes('_octo') || message.includes('logged_in')) {
-      return true;
-    }
+         // GitHub cookie warnings
+     if (message.includes('_gh_sess') || message.includes('_octo') || message.includes('logged_in')) {
+       return true;
+     }
+     
+     // Google Analytics cookie warnings
+     if (message.includes('_ga') || message.includes('_ga_6GJM6TLZMR')) {
+       return true;
+     }
     
     // General cookie rejections
     if (message.includes('Cookie') && message.includes('rejected')) {
@@ -120,11 +125,13 @@
   
   // Clear problematic cookies immediately
   if (typeof document !== 'undefined') {
-    const problematicCookies = ['_gh_sess', '_octo', 'logged_in'];
+    const problematicCookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR'];
     problematicCookies.forEach(cookieName => {
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.github.com`;
       document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=github.com`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.omeans-team.github.io`;
+      document.cookie = `${cookieName}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=omeans-team.github.io`;
     });
   }
   
