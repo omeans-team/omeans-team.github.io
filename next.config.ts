@@ -3,8 +3,8 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   output: 'export',
   trailingSlash: true,
-  basePath: '/omeans-team-live',
-  assetPrefix: '/omeans-team-live/',
+  basePath: process.env.NODE_ENV === 'production' ? '/omeans-team-live' : '',
+  assetPrefix: process.env.NODE_ENV === 'production' ? '/omeans-team-live/' : '',
   images: {
     unoptimized: true
   }
