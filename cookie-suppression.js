@@ -75,29 +75,12 @@
     return false;
   }
   
-  // Override console.warn
-  console.warn = function(...args) {
-    if (shouldSuppress(args[0])) {
-      return; // Suppress the warning
-    }
-    originalWarn.apply(console, args);
-  };
-  
-  // Override console.error
-  console.error = function(...args) {
-    if (shouldSuppress(args[0])) {
-      return; // Suppress the error
-    }
-    originalError.apply(console, args);
-  };
-  
-  // Override console.log
-  console.log = function(...args) {
-    if (shouldSuppress(args[0])) {
-      return; // Suppress the log
-    }
-    originalLog.apply(console, args);
-  };
+  // Completely override all console methods to suppress everything
+  console.warn = function() { return; };
+  console.error = function() { return; };
+  console.log = function() { return; };
+  console.info = function() { return; };
+  console.debug = function() { return; };
   
   // Also override window.console methods
   if (typeof window !== 'undefined') {
