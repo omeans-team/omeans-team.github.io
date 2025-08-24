@@ -14,6 +14,15 @@
   console.info = function() { return; };
   console.debug = function() { return; };
   
+  // Also suppress window.console methods immediately
+  if (typeof window !== 'undefined') {
+    window.console.warn = function() { return; };
+    window.console.error = function() { return; };
+    window.console.log = function() { return; };
+    window.console.info = function() { return; };
+    window.console.debug = function() { return; };
+  }
+  
   // Function to check if message should be suppressed
   function shouldSuppress(message) {
     if (typeof message !== 'string') return false;
@@ -135,5 +144,6 @@
     });
   }
   
-  console.log('🍪 Cookie suppression script loaded successfully');
+  // Suppress success message too
+  // console.log('🍪 Cookie suppression script loaded successfully');
 })();
