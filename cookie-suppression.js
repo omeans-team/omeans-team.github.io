@@ -41,6 +41,21 @@
       return true;
     }
     
+    // GitHub domain errors
+    if (message.includes('github.com/omeans-team.png')) {
+      return true;
+    }
+    
+    // Service Worker errors
+    if (message.includes('ServiceWorker') || message.includes('FetchEvent')) {
+      return true;
+    }
+    
+    // Network errors
+    if (message.includes('NetworkError') || message.includes('NS_ERROR_INTERCEPTION_FAILED')) {
+      return true;
+    }
+    
     return false;
   }
   
