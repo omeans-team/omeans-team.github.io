@@ -7,10 +7,12 @@
   const originalError = console.error;
   const originalLog = console.log;
   
-  // Immediately suppress any existing warnings
+  // Immediately suppress ALL console output
   console.warn = function() { return; };
   console.error = function() { return; };
   console.log = function() { return; };
+  console.info = function() { return; };
+  console.debug = function() { return; };
   
   // Function to check if message should be suppressed
   function shouldSuppress(message) {
