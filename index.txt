@@ -4,91 +4,95 @@
 :HL["/_next/static/media/93f479601ee12b01-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
 :HL["/_next/static/css/fd6a45eeb105ef20.css","style"]
 :HL["/_next/static/css/edfa8d1ce7b11ca2.css","style"]
-2:Ta79,
-             // Immediate console suppression - runs before everything else
-             (function() {
-               // Immediately suppress ALL console output
-               console.warn = function() { return; };
-               console.error = function() { return; };
-               console.log = function() { return; };
-               console.info = function() { return; };
-               console.debug = function() { return; };
-               
-               // Also suppress window.console methods
-               if (typeof window !== 'undefined') {
-                 window.console.warn = function() { return; };
-                 window.console.error = function() { return; };
-                 window.console.log = function() { return; };
-                 window.console.info = function() { return; };
-                 window.console.debug = function() { return; };
-               }
-               
-                               // Also suppress any existing console methods that might be restored
-                setTimeout(() => {
-                  console.warn = function() { return; };
-                  console.error = function() { return; };
-                  console.log = function() { return; };
-                  console.info = function() { return; };
-                  console.debug = function() { return; };
-                  
-                  if (typeof window !== 'undefined') {
-                    window.console.warn = function() { return; };
-                    window.console.error = function() { return; };
-                    window.console.log = function() { return; };
-                    window.console.info = function() { return; };
-                    window.console.debug = function() { return; };
-                  }
-                }, 0);
-                
-                // Also suppress console methods that might be restored by other scripts
-                setInterval(() => {
-                  console.warn = function() { return; };
-                  console.error = function() { return; };
-                  console.log = function() { return; };
-                  console.info = function() { return; };
-                  console.debug = function() { return; };
-                  
-                  if (typeof window !== 'undefined') {
-                    window.console.warn = function() { return; };
-                    window.console.error = function() { return; };
-                    window.console.log = function() { return; };
-                    window.console.info = function() { return; };
-                    window.console.debug = function() { return; };
-                  }
-                }, 10);
-             })();
-           3:T5b3,
-              // Block Google Tag Manager completely
+2:T89e,
+              // Safe console suppression - runs before everything else
               (function() {
-                // Block gtag function
-                window.gtag = function() { return; };
-                
-                // Block dataLayer
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push = function() { return; };
-                
-                // Block Google Tag Manager script loading
-                const originalCreateElement = document.createElement;
-                document.createElement = function(tagName) {
-                  const element = originalCreateElement.call(this, tagName);
-                  if (tagName.toLowerCase() === 'script') {
-                    const originalSrc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
-                    if (originalSrc) {
-                      Object.defineProperty(element, 'src', {
-                        get: originalSrc.get,
-                        set: function(value) {
-                          if (value.includes('googletagmanager.com') || value.includes('google-analytics.com')) {
-                            return; // Don't set src for Google scripts
-                          }
-                          return originalSrc.set?.call(this, value);
-                        }
-                      });
+                try {
+                  // Only suppress specific console methods, not all
+                  const originalConsole = {
+                    warn: console.warn,
+                    error: console.error,
+                    log: console.log,
+                    info: console.info,
+                    debug: console.debug
+                  };
+                  
+                  // Suppress only problematic console output
+                  console.warn = function(...args) {
+                    const message = args.join(' ');
+                    if (message.includes('Cookie') || message.includes('__TAG_ASSISTANT') || message.includes('googletagmanager')) {
+                      return;
                     }
+                    return originalConsole.warn.apply(console, args);
+                  };
+                  
+                  console.error = function(...args) {
+                    const message = args.join(' ');
+                    if (message.includes('Cookie') || message.includes('__TAG_ASSISTANT') || message.includes('googletagmanager')) {
+                      return;
+                    }
+                    return originalConsole.error.apply(console, args);
+                  };
+                  
+                  // Keep other console methods for debugging
+                  console.log = originalConsole.log;
+                  console.info = originalConsole.info;
+                  console.debug = originalConsole.debug;
+                  
+                  // Also handle window.console safely
+                  if (typeof window !== 'undefined') {
+                    window.console.warn = console.warn;
+                    window.console.error = console.error;
+                    window.console.log = console.log;
+                    window.console.info = console.info;
+                    window.console.debug = console.debug;
                   }
-                  return element;
-                };
+                } catch (e) {
+                  // If there's an error, don't break the page
+                  console.log('Console suppression error:', e);
+                }
               })();
-            0:{"P":null,"b":"VHHg-Ipfn0yKdfrJSIXtg","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/fd6a45eeb105ef20.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Cross-Origin-Opener-Policy","content":"same-origin"}],["$","meta",null,{"httpEquiv":"Cross-Origin-Embedder-Policy","content":"require-corp"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"src":"/cookie-suppression.js"}],["$","script",null,{"src":"/block-external-requests.js"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],"$L4"]}],"$L5"]}]]}],{"children":["__PAGE__","$L6",{},null,false]},null,false],"$L7",false]],"m":"$undefined","G":["$8",[]],"s":false,"S":true}
+            3:T79b,
+              // Safe Google Tag Manager blocking
+              (function() {
+                try {
+                  // Block gtag function safely
+                  if (typeof window !== 'undefined') {
+                    window.gtag = function() { return; };
+                    
+                    // Block dataLayer safely
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push = function() { return; };
+                  }
+                  
+                  // Block Google Tag Manager script loading safely
+                  if (typeof document !== 'undefined') {
+                    const originalCreateElement = document.createElement;
+                    document.createElement = function(tagName) {
+                      const element = originalCreateElement.call(this, tagName);
+                      if (tagName.toLowerCase() === 'script') {
+                        const originalSrc = Object.getOwnPropertyDescriptor(HTMLScriptElement.prototype, 'src');
+                        if (originalSrc) {
+                          Object.defineProperty(element, 'src', {
+                            get: originalSrc.get,
+                            set: function(value) {
+                              if (value && (value.includes('googletagmanager.com') || value.includes('google-analytics.com'))) {
+                                return; // Don't set src for Google scripts
+                              }
+                              return originalSrc.set?.call(this, value);
+                            }
+                          });
+                        }
+                      }
+                      return element;
+                    };
+                  }
+                } catch (e) {
+                  // If there's an error, don't break the page
+                  console.log('Google Tag Manager blocking error:', e);
+                }
+              })();
+            0:{"P":null,"b":"gIb7ycHE8neH55aJkwewQ","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/fd6a45eeb105ef20.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Cross-Origin-Opener-Policy","content":"same-origin"}],["$","meta",null,{"httpEquiv":"Cross-Origin-Embedder-Policy","content":"require-corp"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"src":"/cookie-suppression.js"}],["$","script",null,{"src":"/block-external-requests.js"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}],"$L4"]}],"$L5"]}]]}],{"children":["__PAGE__","$L6",{},null,false]},null,false],"$L7",false]],"m":"$undefined","G":["$8",[]],"s":false,"S":true}
 a:I[7555,[],""]
 b:I[1295,[],""]
 c:I[6874,["345","static/chunks/app/not-found-2406ec523e183c35.js"],""]
@@ -97,55 +101,52 @@ e:I[7091,["177","static/chunks/app/layout-c4dfadea73b26547.js"],"default"]
 f:I[4892,["177","static/chunks/app/layout-c4dfadea73b26547.js"],"default"]
 10:I[898,["177","static/chunks/app/layout-c4dfadea73b26547.js"],"default"]
 11:I[894,[],"ClientPageRoot"]
-12:I[1337,["566","static/chunks/3deddded-3c8465e5d0eec30a.js","766","static/chunks/766-1cd631173aa77bb4.js","974","static/chunks/app/page-d271a4f0e4cc71e5.js"],"default"]
+12:I[1337,["566","static/chunks/3deddded-3c8465e5d0eec30a.js","766","static/chunks/766-1cd631173aa77bb4.js","974","static/chunks/app/page-e0a8ec177aed5530.js"],"default"]
 15:I[9665,[],"OutletBoundary"]
 17:I[4911,[],"AsyncMetadataOutlet"]
 19:I[9665,[],"ViewportBoundary"]
 1b:I[9665,[],"MetadataBoundary"]
 1c:"$Sreact.suspense"
-9:Ta01,
-            // Immediate cookie suppression - runs before everything else
+9:T92e,
+            // Safe cookie suppression - runs before everything else
             (function() {
-              // Immediately override ALL console methods
-              console.warn = function() { return; };
-              console.error = function() { return; };
-              console.log = function() { return; };
-              console.info = function() { return; };
-              console.debug = function() { return; };
-              
-              // Also override window.console methods
-              if (typeof window !== 'undefined') {
-                window.console.warn = function() { return; };
-                window.console.error = function() { return; };
-                window.console.log = function() { return; };
-                window.console.info = function() { return; };
-                window.console.debug = function() { return; };
-              }
-              
-                             // Clear problematic cookies immediately
-               if (typeof document !== 'undefined') {
-                 const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR', '__TAG_ASSISTANT', '__TAG_ASSISTANT_*'];
-                const domains = ['', '.github.com', 'github.com', '.omeans-team.github.io', 'omeans-team.github.io', '.avatars.githubusercontent.com', 'avatars.githubusercontent.com'];
-                
-                cookies.forEach(cookie => {
-                  domains.forEach(domain => {
-                    const domainPart = domain ? '; domain=' + domain : '';
-                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
-                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict' + domainPart;
-                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax' + domainPart;
-                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure' + domainPart;
-                  });
-                });
-                
-                // Also clear cookies periodically
-                setInterval(() => {
+              try {
+                // Clear problematic cookies immediately
+                if (typeof document !== 'undefined') {
+                  const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR', '__TAG_ASSISTANT'];
+                  const domains = ['', '.github.com', 'github.com', '.omeans-team.github.io', 'omeans-team.github.io', '.avatars.githubusercontent.com', 'avatars.githubusercontent.com'];
+                  
                   cookies.forEach(cookie => {
                     domains.forEach(domain => {
-                      const domainPart = domain ? '; domain=' + domain : '';
-                      document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
+                      try {
+                        const domainPart = domain ? '; domain=' + domain : '';
+                        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
+                        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict' + domainPart;
+                        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax' + domainPart;
+                        document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure' + domainPart;
+                      } catch (e) {
+                        // Ignore individual cookie clearing errors
+                      }
                     });
                   });
-                }, 1000);
+                  
+                  // Also clear cookies periodically but less aggressively
+                  setInterval(() => {
+                    cookies.forEach(cookie => {
+                      domains.forEach(domain => {
+                        try {
+                          const domainPart = domain ? '; domain=' + domain : '';
+                          document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
+                        } catch (e) {
+                          // Ignore individual cookie clearing errors
+                        }
+                      });
+                    });
+                  }, 5000); // Less frequent clearing
+                }
+              } catch (e) {
+                // If there's an error, don't break the page
+                console.log('Cookie suppression error:', e);
               }
             })();
           4:["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$9"}}]
