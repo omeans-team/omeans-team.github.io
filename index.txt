@@ -57,55 +57,58 @@
                   }
                 }, 10);
              })();
-           3:T949,
+           3:T9c8,
             // Immediate cookie suppression - runs before everything else
             (function() {
-                             // Immediately override ALL console methods
-               console.warn = function() { return; };
-               console.error = function() { return; };
-               console.log = function() { return; };
-               console.info = function() { return; };
-               console.debug = function() { return; };
-               
-               // Also override window.console methods
-               if (typeof window !== 'undefined') {
-                 window.console.warn = function() { return; };
-                 window.console.error = function() { return; };
-                 window.console.log = function() { return; };
-                 window.console.info = function() { return; };
-                 window.console.debug = function() { return; };
-               }
+              // Immediately override ALL console methods
+              console.warn = function() { return; };
+              console.error = function() { return; };
+              console.log = function() { return; };
+              console.info = function() { return; };
+              console.debug = function() { return; };
               
-                             // Clear problematic cookies immediately
-               if (typeof document !== 'undefined') {
-                 const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR'];
-                 cookies.forEach(cookie => {
-                   document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                   document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.github.com';
-                   document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=github.com';
-                   document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=.omeans-team.github.io';
-                   document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=omeans-team.github.io';
-                 });
-               }
+              // Also override window.console methods
+              if (typeof window !== 'undefined') {
+                window.console.warn = function() { return; };
+                window.console.error = function() { return; };
+                window.console.log = function() { return; };
+                window.console.info = function() { return; };
+                window.console.debug = function() { return; };
+              }
               
-                             // Disable Service Worker untuk menghindari network errors
-               // if ('serviceWorker' in navigator) {
-               //   navigator.serviceWorker.register('/sw.js')
-               //     .then(registration => {
-               //       console.log('Service Worker registered:', registration);
-               //     })
-               //     .catch(error => {
-               //       console.log('Service Worker registration failed:', error);
-               //     });
-               // }
+              // Clear problematic cookies immediately
+              if (typeof document !== 'undefined') {
+                const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR'];
+                const domains = ['', '.github.com', 'github.com', '.omeans-team.github.io', 'omeans-team.github.io', '.avatars.githubusercontent.com', 'avatars.githubusercontent.com'];
+                
+                cookies.forEach(cookie => {
+                  domains.forEach(domain => {
+                    const domainPart = domain ? '; domain=' + domain : '';
+                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
+                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Strict' + domainPart;
+                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax' + domainPart;
+                    document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=None; Secure' + domainPart;
+                  });
+                });
+                
+                // Also clear cookies periodically
+                setInterval(() => {
+                  cookies.forEach(cookie => {
+                    domains.forEach(domain => {
+                      const domainPart = domain ? '; domain=' + domain : '';
+                      document.cookie = cookie + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/' + domainPart;
+                    });
+                  });
+                }, 1000);
+              }
             })();
-          0:{"P":null,"b":"EjRElw7biSJ3JZUdGvhX7","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/fd6a45eeb105ef20.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Cross-Origin-Opener-Policy","content":"same-origin"}],["$","meta",null,{"httpEquiv":"Cross-Origin-Embedder-Policy","content":"require-corp"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"src":"/cookie-suppression.js"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}]]}],"$L4"]}]]}],{"children":["__PAGE__","$L5",{},null,false]},null,false],"$L6",false]],"m":"$undefined","G":["$7",[]],"s":false,"S":true}
+          0:{"P":null,"b":"zb0jS2rV0PPE7mgoSqZsg","p":"","c":["",""],"i":false,"f":[[["",{"children":["__PAGE__",{}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/fd6a45eeb105ef20.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","meta",null,{"httpEquiv":"Cross-Origin-Opener-Policy","content":"same-origin"}],["$","meta",null,{"httpEquiv":"Cross-Origin-Embedder-Policy","content":"require-corp"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}],["$","script",null,{"src":"/cookie-suppression.js"}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$3"}}]]}],"$L4"]}]]}],{"children":["__PAGE__","$L5",{},null,false]},null,false],"$L6",false]],"m":"$undefined","G":["$7",[]],"s":false,"S":true}
 8:I[7555,[],""]
 9:I[1295,[],""]
 a:I[6874,["345","static/chunks/app/not-found-2406ec523e183c35.js"],""]
-b:I[9795,["177","static/chunks/app/layout-3b1fa3bde11e4d20.js"],"default"]
-c:I[7091,["177","static/chunks/app/layout-3b1fa3bde11e4d20.js"],"default"]
-d:I[4892,["177","static/chunks/app/layout-3b1fa3bde11e4d20.js"],"default"]
+b:I[9795,["177","static/chunks/app/layout-f3a4dc6e0f71a3a3.js"],"default"]
+c:I[7091,["177","static/chunks/app/layout-f3a4dc6e0f71a3a3.js"],"default"]
+d:I[4892,["177","static/chunks/app/layout-f3a4dc6e0f71a3a3.js"],"default"]
 e:I[894,[],"ClientPageRoot"]
 f:I[1337,["566","static/chunks/3deddded-3c8465e5d0eec30a.js","766","static/chunks/766-1cd631173aa77bb4.js","974","static/chunks/app/page-82a046ea23e33734.js"],"default"]
 12:I[9665,[],"OutletBoundary"]
