@@ -9,7 +9,8 @@
     'avatars.githubusercontent.com',
     'googletagmanager.com',
     'google-analytics.com',
-    'google.com'
+    'google.com',
+    'fonts.gstatic.com'
   ];
   
   // Override fetch before it's used

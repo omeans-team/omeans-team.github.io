@@ -42,7 +42,7 @@
   
   // Clear problematic cookies immediately and continuously
   if (typeof document !== 'undefined') {
-    const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR'];
+    const cookies = ['_gh_sess', '_octo', 'logged_in', '_ga', '_ga_6GJM6TLZMR', '__TAG_ASSISTANT'];
     const domains = ['', '.github.com', 'github.com', '.omeans-team.github.io', 'omeans-team.github.io', '.avatars.githubusercontent.com', 'avatars.githubusercontent.com'];
     
     const clearCookies = () => {
