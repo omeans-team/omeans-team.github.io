@@ -19,10 +19,10 @@
   "homepage": "https://omeans-team.github.io",
   "repository": {
     "type": "git",
-    "url": "https://github.com/omeans-team/omeans-team.github.io.git"
+    "url": "https://github.com/omeans-team/omeans-team-master.git"
   },
   "bugs": {
-    "url": "https://github.com/omeans-team/omeans-team.github.io/issues"
+    "url": "https://github.com/omeans-team/omeans-team-master/issues"
   },
   "scripts": {
     "dev": "next dev --turbopack",
