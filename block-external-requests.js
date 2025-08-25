@@ -4,8 +4,6 @@
   
      // Block all external requests immediately
    const blockedDomains = [
-     'github.com',
-     'api.github.com', 
      'avatars.githubusercontent.com',
      'googletagmanager.com',
      'google-analytics.com',

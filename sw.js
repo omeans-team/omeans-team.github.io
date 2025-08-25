@@ -36,8 +36,7 @@ self.addEventListener('fetch', (event) => {
 async function handleGitHubRequest(request) {
   try {
     // Skip invalid URLs
-    if (request.url.includes('github.com/omeans-team.png') || 
-        request.url.includes('github.com/') && !request.url.includes('api.github.com') && !request.url.includes('avatars.githubusercontent.com')) {
+    if (request.url.includes('github.com/omeans-team.png')) {
       console.log('Skipping invalid GitHub URL:', request.url);
       return new Response('', {
         status: 404,
